@@ -55,6 +55,7 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_saturn; ?> >Saturn</option>
 <option value=<?php echo $gid_sms; ?> >Sega Master System</option>
 <option value=<?php echo $gid_snes; ?> >Super Nintendo Entertainment System</option>
+<option value=<?php echo $gid_switch; ?> >Switch</option>
 <option value=<?php echo $gid_vb; ?> >Virtual Boy</option>
 <option value=<?php echo $gid_wii; ?> >Wii</option>
 <option value=<?php echo $gid_wiiu; ?> >Wii U</option>
@@ -91,14 +92,54 @@ if($result->num_rows > 0){
 	echo "Owner table empty...";
 }	
 
+//gather totals 
+$sql = "SELECT * from Games_Owned";
+$result = $conn->query($sql);
+$total = $result->num_rows;
+
+$count_games = array(0, 0, 0);//stephen, jordan, shared
+
+$sql = "SELECT * from Games_Owned where group_id = '$current_list' and owner_id = 1";
+$result = $conn->query($sql);
+$count_games[0] = $result->num_rows;
+
+$sql = "SELECT * from Games_Owned where group_id = '$current_list' and owner_id = 2";
+$result = $conn->query($sql);
+$count_games[1] = $result->num_rows;
+
+$sql = "SELECT * from Games_Owned where group_id = '$current_list' and owner_id = 3";
+$result = $conn->query($sql);
+$count_games[2] = $result->num_rows;
+
+
 $sql = "SELECT * from Games_Owned where group_id = '$current_list' ORDER BY title";
 $result = $conn->query($sql);
 
 if($result->num_rows > 0){
 	?>
-
+		
 		<header><h2>List of games for group: <?php echo $current_list; ?></h2></header>
-		<table name="game_table" id="game_table">
+		</br>
+		<!-- Display totals table -->
+		<table border='1' style='border-collapse:collapse'>
+		<tr>
+		<th>Stephen</th>
+		<th>Jordan</th>
+		<th>Shared</th>
+		<th>Platform Total</th>
+		<th>Collection Total</th>
+		</tr>
+		<tr>
+		<td> <?php echo $count_games[0]; ?> </td>
+		<td> <?php echo $count_games[1]; ?> </td>
+		<td> <?php echo $count_games[2]; ?> </td>
+		<td> <?php echo $result->num_rows; ?> </td>
+		<td> <?php echo $total; ?> </td>
+		</tr>
+		</table>
+		</br></br>
+
+		<table border='1' style='border-collapse:collapse' name="game_table" id="game_table" >
 		<tr>
 		<th>Title</th>
 		<th>Owner</th>

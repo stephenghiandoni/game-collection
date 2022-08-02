@@ -67,6 +67,7 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_saturn; ?> >Saturn</option>
 <option value=<?php echo $gid_sms; ?> >Sega Master System</option>
 <option value=<?php echo $gid_snes; ?> >Super Nintendo Entertainment System</option>
+<option value=<?php echo $gid_switch; ?> >Switch</option>
 <option value=<?php echo $gid_vb; ?> >Virtual Boy</option>
 <option value=<?php echo $gid_wii; ?> >Wii</option>
 <option value=<?php echo $gid_wiiu; ?> >Wii U</option>
@@ -202,6 +203,7 @@ function parse_game_table(){
 	for (i = 1; i < myTab.rows.length; i++) {
 		//Get selections from game table
 		var title = document.getElementById("title_text" + (i-1)).value;
+		title = title.replaceAll("'", "''", 'g');
 		var owner = document.getElementById("owner_drop" + (i-1)).value;
 		var game = document.getElementById("game_chk" + (i-1));
 		//reset check boxes that are clicked, store results first
@@ -271,8 +273,8 @@ if(isset($_POST['populate'])){
 //	pop_from_csv($conn, $csv_path_nes, $gid_nes);
 //	pop_from_csv($conn, $csv_path_ps1_1, $gid_ps1);
 //	pop_from_csv($conn, $csv_path_ps1_2, $gid_ps1);
-	pop_from_csv($conn, $csv_path_ps2_1, $gid_ps2);
-	pop_from_csv($conn, $csv_path_ps2_2, $gid_ps2);
+//	pop_from_csv($conn, $csv_path_ps2_1, $gid_ps2);
+//	pop_from_csv($conn, $csv_path_ps2_2, $gid_ps2);
 //	pop_from_csv($conn, $csv_path_ps3_1, $gid_ps3);
 //	pop_from_csv($conn, $csv_path_ps3_2, $gid_ps3);
 //	pop_from_csv($conn, $csv_path_ps3_3, $gid_ps3);
@@ -289,6 +291,11 @@ if(isset($_POST['populate'])){
 //	pop_from_csv($conn, $csv_path_saturn, $gid_saturn);
 //	pop_from_csv($conn, $csv_path_sms, $gid_sms);
 //	pop_from_csv($conn, $csv_path_snes, $gid_snes);
+//	pop_from_csv($conn, $csv_path_switch_1, $gid_switch);
+//	pop_from_csv($conn, $csv_path_switch_2, $gid_switch);
+//	pop_from_csv($conn, $csv_path_switch_3, $gid_switch);
+//	pop_from_csv($conn, $csv_path_switch_4, $gid_switch);
+//	pop_from_csv($conn, $csv_path_switch_5, $gid_switch);
 //	pop_from_csv($conn, $csv_path_vb, $gid_vb);
 //	pop_from_csv($conn, $csv_path_wii, $gid_wii);
 //	pop_from_csv($conn, $csv_path_wiiu, $gid_wiiu);

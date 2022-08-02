@@ -19,6 +19,7 @@ for($i = 0; $i < count($selections)-1; $i++){
 		echo $selections[$i];
 	}else{
 		$sql = "INSERT INTO Games_Owned (title, group_id, owner_id, game, box, manual, region) VALUES ($selections[$i])";
+//		$sql = str_replace('\'', '\'\'', $sql);
 		if($conn->query($sql) === TRUE){
 			echo "Successfully inserted record: $selections[$i]";
 		}else{
