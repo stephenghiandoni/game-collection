@@ -1,0 +1,20 @@
+body{
+	background-color: #A8F31D;
+}
+
+table, th, td{
+	border: 2px solid black;
+	border-collapse: collapse;
+}
+
+th, td{
+	padding: 15px;
+}
+
+#legend{
+	border: 2px solid;
+}
+
+#legend_footnotes{
+	font-style: italic;
+}

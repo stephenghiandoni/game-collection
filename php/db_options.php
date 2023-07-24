@@ -1,4 +1,12 @@
+<!DOCTYPE HTML>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Database Manager</title>
+<link rel="stylesheet" href="../css/index.css?version=1" type="text/css">
+</head>
+<body>
+<h1>Make a Selection...</h1>
 <?php
 include('def.php');
 
@@ -14,11 +22,17 @@ if(isset($_POST['browsedb'])){
 	header("Location:$games");
 	exit;
 }
+if(isset($_POST['value'])){
+	header("Location:$value_pg");
+	exit;
+}
 ?>
+<div class="container" id="form_container">
 <form method="post">
-<input type="submit" name="editdb" class="button" value="Consoles"/>
-<input type="submit" name="browsedb" class="button" value="Games"/>
+<input type="submit" name="editdb" class="button" value="Consoles"/><br/><br/>
+<input type="submit" name="browsedb" class="button" value="Games"/><br/><br/>
+<input type="submit" name="value" class="button" value="Value Options"/><br/><br/>
 <input type="submit" name="home" class="button" value="Home"/>
 </form>
-
+</body>
 </html>

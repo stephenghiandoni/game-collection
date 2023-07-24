@@ -1,4 +1,11 @@
+<!DOCTYPE HTML>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Console Entry</title>
+<link rel="stylesheet" href="css/consoles.css?version=1" type="text/css">
+</head>
+<body>
 <?php
 include('def.php');
 include('/var/www/sensitive.php');
@@ -197,4 +204,5 @@ if($result->num_rows > 0){
 
 $conn->close();
 ?>
+</body>
 </html>

@@ -1,31 +1,50 @@
 <!DOCTYPE html>
 <!-- 
 Script used to display Collection DB
+Can also run appraisal checks
 -->
 <html>
 <head>
+<meta charset="UTF-8">
+<title>Browse Game Collection</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="../javascript/appraise.js"></script>
+<link rel="stylesheet" href="css/display_games.css?version=1" type="text/css">
 <?php
 include('def.php');
 include('/var/www/sensitive.php');
 $current_list = "";
+$query_list = array();//arrays to pass to bash for appraisals
+$title_list = array();
+$game_list = array();
+$box_list = array();
+$manual_list = array();
+$sealed_list = array();
 $conn = new mysqli($servername, $username, $password, $dbname);   
 if ($conn->connect_error) {
 	die("Connection failed: " . $conn->connect_error);
 }
 
-/*PAGE FOR DATABASE INPUT */
 if(isset($_POST['home'])){
 	header("Location:$index");
 	exit;
 }
+
 if(isset($_POST['back'])){
 	header("Location:$games");
 	exit;
 }
 
+//sets current_list var to determine which list of games to process
 if(isset($_POST['platform_filter'])){
 	$current_list = $_POST['pname_drop'];
 }
+
+//read value of query_list
+//if(isset($_POST['appraise_games'])){
+//	$current_list = $_POST['pname_drop'];
+//	echo $query_list[0];
+//}
 
 ?>
 
@@ -35,6 +54,7 @@ if(isset($_POST['platform_filter'])){
 <form method="post">
 <label for="pname_lbl">Platform: </label>
 <select name="pname_drop" id="pname">
+<option value=<?php echo "All"; ?> >All</option>
 <option value=<?php echo $gid_3ds; ?> >3DS</option>
 <option value=<?php echo $gid_a2600; ?> >Atari 2600</option>
 <option value=<?php echo $gid_ds; ?> >DS</option>
@@ -64,6 +84,8 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_xbone; ?> >Xbox One</option>
 </select>
 <input type="submit" name="platform_filter" class="button" value="Display"/>
+<!--input type="submit" id="appraise_btn" name="appraise_games" class="button" value="Appraise Games" /-->
+<input type="checkbox" name="run_appraisal" value="Appraise Selection"/>Appraise Selection
 </form>
 
 <form method="post">
@@ -99,26 +121,26 @@ $total = $result->num_rows;
 
 $count_games = array(0, 0, 0);//stephen, jordan, shared
 
-$sql = "SELECT * from Games_Owned where group_id = '$current_list' and owner_id = 1";
+//set group id if a specific console is selected, otherwise display all games owned
+$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = 1";
 $result = $conn->query($sql);
 $count_games[0] = $result->num_rows;
 
-$sql = "SELECT * from Games_Owned where group_id = '$current_list' and owner_id = 2";
+$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = 2";
 $result = $conn->query($sql);
 $count_games[1] = $result->num_rows;
 
-$sql = "SELECT * from Games_Owned where group_id = '$current_list' and owner_id = 3";
+$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = 3";
 $result = $conn->query($sql);
 $count_games[2] = $result->num_rows;
 
-
-$sql = "SELECT * from Games_Owned where group_id = '$current_list' ORDER BY title";
+$sql = "SELECT * from Games_Owned" . (($current_list == "All") ? " " :  " where group_id = '$current_list' ") . "ORDER BY title";
 $result = $conn->query($sql);
 
-if($result->num_rows > 0){
+if($result->num_rows > 0){	
+	//	$current_list =	translate_gid($current_list);
 	?>
-		
-		<header><h2>List of games for group: <?php echo $current_list; ?></h2></header>
+		<header><h2>List of games for group: <?php echo translate_gid($current_list); ?></h2></header>
 		</br>
 		<!-- Display totals table -->
 		<table border='1' style='border-collapse:collapse'>
@@ -151,8 +173,15 @@ if($result->num_rows > 0){
 
 		<?php
 		$i = 0;
+	$all = false;
+	if($current_list === 'All')
+		$all = true;
 
 	while($row = $result->fetch_assoc()){
+		//get gid of current result if iterating through all games
+		if($all)
+			$current_list = $row['group_id'];
+
 		$owner = $row['owner_id'];
 		if($owner == 1) $owner = "Stephen";
 		else if($owner == 2) $owner = "Jordan";
@@ -166,6 +195,7 @@ if($result->num_rows > 0){
 		$manual = $row['manual'];
 		if($manual == 1) $manual = 'Y';
 		else $manual = 'N';
+
 		?>
 			<tr>
 			<td><?php echo $row['title']; ?></td>
@@ -176,16 +206,67 @@ if($result->num_rows > 0){
 			<td><?php echo $row['region']; ?></td>
 			</tr>
 			<?php
+			$factory_sealed = 0;	//**********THIS NEEDS TO BE ADDED TO DB TABLE*****************
+		$url_title = adjust_title($row['title']);
+		$appraisal_query = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list) . "/" . $url_title;
+
+		array_push($query_list, $appraisal_query);//arrays to pass to bash for appraisals
+		array_push($title_list, escape_spaces($row['title']));
+		array_push($game_list, $game);
+		array_push($box_list, $box);
+		array_push($manual_list, $manual);
+		array_push($sealed_list, "N");
 	}
 	?>
 
 		</table>
 		<?php
+		if (isset($_POST['run_appraisal'])){
+			$num_games = count($query_list);
+
+			$query_arg = implode(' ', $query_list);
+//			$query_arg = array_map('escape_spaces', $query_arg);
+//			$title_arg = array_map('escape_spaces', $title_list);
+//			$game_arg = array_map('escape_spaces', $game_list);
+//			$box_arg = array_map('escape_spaces', $box_list);
+//			$manual_arg = array_map('escape_spaces', $manual_list);
+//			$sealed_arg = array_map('escape_spaces', $sealed_list);
+//
+//			$title_arg = implode(' ', $title_arg);
+//			$game_arg = implode(' ', $game_arg);
+//			$box_arg = implode(' ', $box_arg);
+//			$manual_arg = implode(' ', $manual_arg);
+//			$sealed_arg = implode(' ', $sealed_arg);
+
+//			$command = "/var/www/html/sh/appraise.sh $num_games $query_arg $title_arg $game_arg $box_arg $manual_arg $sealed_arg";
+			$command = "/var/www/html/sh/appraise.sh $num_games $query_arg ";
+
+			$output = shell_exec("$command 2>&1 ");
+			echo $output;
+		}	
+
 }else{
 	echo "Nothing to display...";
 }
 
 $conn->close();
-?>
 
+//helper function to pass query_list to bash with spaces replaced with plus signs to build url to query
+function escape_spaces($str){
+	return "'" . str_replace("'", "'\\''", $str) . "'";
+}
+
+//make game title usable for pricecharting url
+function adjust_title($title){
+	//add any exceptions here
+	$title = str_replace(array('The Legend of '), '', $title);	
+	//replace spaces with dashes	
+	$title = str_replace(array(' ', '/'), '-', $title);
+
+	return $title;
+}
+
+?>
+</body>
+</html>
 

@@ -4,6 +4,7 @@ $db_options = "db_options.php";
 $games = "games.php";
 $display_games = "display_games.php";
 $consoles = "consoles.php";
+$value_pg = "value.php";
 $gid_famicom = "famicom";
 $gid_sfamicom = "super_famicom";
 $gid_3ds = "3ds";
@@ -20,6 +21,7 @@ $gid_ps1 = "ps1";
 $gid_ps2 = "ps2";
 $gid_ps3 = "ps3";
 $gid_ps4 = "ps4";
+$gid_ps5 = "ps5";
 $gid_psp = "psp";
 $gid_ps_vita = "ps_vita";
 $gid_saturn = "saturn";
@@ -146,4 +148,42 @@ $platform_list = array(
 		"Sega&nbspGenesis&nbspMini",
 		"PlayStation&nbspClassic&nbspConsole"
 		);
-		?>
+
+//change gid to platform named used by pricecharting.com
+//using literal name of gids defined above instead of globals, hopefully will not need to change :D
+function translate_gid($raw_gid){
+	if($raw_gid === "a2600")
+		return 'Atari-2600';
+	elseif($raw_gid === "switch")
+		return 'Nintendo-Switch';
+	elseif($raw_gid === "ps1")
+		return 'Playstation';
+	elseif($raw_gid === "ps2")
+		return 'Playstation-2';
+	elseif($raw_gid === "ps3")
+		return 'Playstation-3';
+	elseif($raw_gid === "ps4")
+		return 'Playstation-4';
+	elseif($raw_gid === "ps5")
+		return 'Playstation-5';
+	elseif($raw_gid === "sms")
+		return 'Sega-Master-System';
+	elseif($raw_gid === "genesis")
+		return 'Sega-Genesis';
+	elseif($raw_gid === "saturn")
+		return 'Sega-Saturn';
+	else
+		return $raw_gid;
+}
+
+//append region to string for building pricecharting url properly
+function translate_region($raw_region){
+	if($raw_region === 'NTSC-J')
+		return 'jp-';
+	elseif($raw_region === 'PAL')
+		return 'pal-';
+	else
+		return $raw_region;
+}
+
+?>

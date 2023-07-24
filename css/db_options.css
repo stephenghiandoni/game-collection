@@ -1,0 +1,14 @@
+body{
+	background-color: orange;
+}
+#form_container	{
+	text-align: center;	
+}
+input[class=button]{
+	background-color: #D3D3D3;
+	border-width: thin;
+	width: 200px;
+	padding: 16px 32px;
+	margin: 4px 2px;
+	cursor: pointer;
+}

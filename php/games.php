@@ -5,6 +5,9 @@ User selects which games to add to Collection DB
 -->
 <html>
 <head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/games.css?version=1" type="text/css">
+<title>Game Entry</title>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 Convert <a href="https://en.wikipedia.org/wiki/Lists_of_video_games">tables from wikipedia</a> to CSV.
 <br/>
@@ -107,6 +110,7 @@ if($result->num_rows > 0){
 }	
 
 $sql = "SELECT * from Game where group_id = '$current_list' ORDER BY title";
+
 $result = $conn->query($sql);
 if($result->num_rows > 0){
 	?>
