@@ -14,8 +14,8 @@ Can also run appraisal checks
 include('def.php');
 include('/var/www/sensitive.php');
 $current_list = "";
-$query_list = array();//arrays to pass to bash for appraisals
-$title_list = array();
+$gameid_list = array();//arrays to pass to bash for appraisals
+$query_list = array();
 $game_list = array();
 $box_list = array();
 $manual_list = array();
@@ -132,6 +132,7 @@ $sql = "SELECT * from Games_Owned" . (($current_list == "All") ? " " :  " where 
 $result = $conn->query($sql);
 
 if($result->num_rows > 0){	
+	$num_games = 0;//param for bash 
 	//	$current_list =	translate_gid($current_list);
 	?>
 		<header><h2>List of games for group: <?php echo translate_gid($current_list); ?></h2></header>
@@ -202,15 +203,18 @@ if($result->num_rows > 0){
 			<?php
 			$factory_sealed = 0;	//**********THIS NEEDS TO BE ADDED TO DB TABLE*****************
 		$url_title = adjust_title($row['title']);
-		$appraisal_query = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list) . "/" . $url_title;
+		$url_platform = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list);
+		$appraisal_query = $url_platform . "/" . $url_title;
+
 
 		//build arrays from current selection to pass to bash for appraisals
+		array_push($gameid_list, $row['game_id']);
 		array_push($query_list, $appraisal_query);		
-		array_push($title_list, escape_spaces($row['title']));
 		array_push($game_list, $game);
 		array_push($box_list, $box);
 		array_push($manual_list, $manual);
 		array_push($sealed_list, "N");
+		$num_games++;
 	}
 	?>
 
@@ -218,17 +222,15 @@ if($result->num_rows > 0){
 		<?php
 		//appraisal checkbox, if set call script pass game data
 		if (isset($_POST['run_appraisal'])){
-			$num_games = count($query_list);
-			$delimiter = "%?";
+			$num_games = count($num_games);
 
-			$query_str = implode("$delimiter", $query_list);
-			$title_str = implode("$delimiter", $title_list);
-			$game_str = implode("$delimiter", $game_list);
-			$box_str = implode("$delimiter", $box_list);
-			$manual_str = implode("$delimiter", $manual_list);
-			$sealed_str = implode("$delimiter", $sealed_list);
-
-			$command = "/var/www/html/sh/appraise.sh $delimiter $num_games $query_str $title_str $game_str $box_str $manual_str $sealed_str ";
+			$gameid_str = implode(' ', $gameid_list);
+			$query_str = implode(' ', $query_list);
+			$game_str = implode(' ', $game_list);
+			$box_str = implode(' ', $box_list);
+			$manual_str = implode(' ', $manual_list);
+			$sealed_str = implode(' ', $sealed_list);
+			$command = "/var/www/html/sh/appraise.sh '$num_games' '$gameid_str' '$query_str' '$game_str' '$box_str' '$manual_str' '$sealed_str' ";
 
 			$output = shell_exec("$command 2>&1 ");
 			echo $output;
@@ -239,11 +241,6 @@ if($result->num_rows > 0){
 }
 
 $conn->close();
-
-//helper function to pass query_list to bash with spaces replaced with plus signs to build url to query
-function escape_spaces($str){
-	return "'" . str_replace("'", "'\\''", $str) . "'";
-}
 
 //make game title usable for pricecharting url
 function adjust_title($title){
