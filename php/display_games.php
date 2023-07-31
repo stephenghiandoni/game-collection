@@ -40,12 +40,6 @@ if(isset($_POST['platform_filter'])){
 	$current_list = $_POST['pname_drop'];
 }
 
-//read value of query_list
-//if(isset($_POST['appraise_games'])){
-//	$current_list = $_POST['pname_drop'];
-//	echo $query_list[0];
-//}
-
 ?>
 
 </head>
@@ -210,7 +204,8 @@ if($result->num_rows > 0){
 		$url_title = adjust_title($row['title']);
 		$appraisal_query = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list) . "/" . $url_title;
 
-		array_push($query_list, $appraisal_query);//arrays to pass to bash for appraisals
+		//build arrays from current selection to pass to bash for appraisals
+		array_push($query_list, $appraisal_query);		
 		array_push($title_list, escape_spaces($row['title']));
 		array_push($game_list, $game);
 		array_push($box_list, $box);
@@ -221,25 +216,19 @@ if($result->num_rows > 0){
 
 		</table>
 		<?php
+		//appraisal checkbox, if set call script pass game data
 		if (isset($_POST['run_appraisal'])){
 			$num_games = count($query_list);
+			$delimiter = "%?";
 
-			$query_arg = implode(' ', $query_list);
-//			$query_arg = array_map('escape_spaces', $query_arg);
-//			$title_arg = array_map('escape_spaces', $title_list);
-//			$game_arg = array_map('escape_spaces', $game_list);
-//			$box_arg = array_map('escape_spaces', $box_list);
-//			$manual_arg = array_map('escape_spaces', $manual_list);
-//			$sealed_arg = array_map('escape_spaces', $sealed_list);
-//
-//			$title_arg = implode(' ', $title_arg);
-//			$game_arg = implode(' ', $game_arg);
-//			$box_arg = implode(' ', $box_arg);
-//			$manual_arg = implode(' ', $manual_arg);
-//			$sealed_arg = implode(' ', $sealed_arg);
+			$query_str = implode("$delimiter", $query_list);
+			$title_str = implode("$delimiter", $title_list);
+			$game_str = implode("$delimiter", $game_list);
+			$box_str = implode("$delimiter", $box_list);
+			$manual_str = implode("$delimiter", $manual_list);
+			$sealed_str = implode("$delimiter", $sealed_list);
 
-//			$command = "/var/www/html/sh/appraise.sh $num_games $query_arg $title_arg $game_arg $box_arg $manual_arg $sealed_arg";
-			$command = "/var/www/html/sh/appraise.sh $num_games $query_arg ";
+			$command = "/var/www/html/sh/appraise.sh $delimiter $num_games $query_str $title_str $game_str $box_str $manual_str $sealed_str ";
 
 			$output = shell_exec("$command 2>&1 ");
 			echo $output;
