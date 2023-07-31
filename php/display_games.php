@@ -222,8 +222,6 @@ if($result->num_rows > 0){
 		<?php
 		//appraisal checkbox, if set call script pass game data
 		if (isset($_POST['run_appraisal'])){
-			$num_games = count($num_games);
-
 			$gameid_str = implode(' ', $gameid_list);
 			$query_str = implode(' ', $query_list);
 			$game_str = implode(' ', $game_list);
