@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<?php ?>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -22,7 +23,7 @@
 <td>E[4]</td><td>O[2]</td><td>H</td><td>L[5]</td><td>H</td><td>H</td><td>H</td><td>T</td><td>D</td><td>D</td><td>W[x]</td><td>W[x]</td>
 </tr>
 <tr>
-<td>E[4]</td><td>O[2]</td><td>/</td><td>P[6]</td><td>H</td><td>H</td><td>H</td><td>T</td><td>D</td><td>D</td><td>W</td><td>W</td>
+<td>E[4]</td><td>O[2]</td><td>/</td><td>P[6]</td><td>H</td><td>H</td><td>H[x]</td><td>T</td><td>D</td><td>D</td><td>W</td><td>W</td>
 </tr>
 </table>
 <div id="legend_div">
@@ -61,6 +62,7 @@ July 9 - Two watermelons and one cucumber passed away<br/>
 July 11 - One pepper plant dead<br/>
 July 16 - Started Miracle-Gro vitamins once per week<br/>
 ~Mid July - Two more watermelons dead :(<br/>
+~Late July - Removed dying pepper<br/>
 </p>
 </body>
 </html>
