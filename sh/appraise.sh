@@ -11,9 +11,12 @@ game_list=($4)
 box_list=($5)
 manual_list=($6)
 sealed_list=($7)
-
-
-#filename=$(echo "$title.txt" | sed 's/\//-/g' )
+loose_price=""
+complete_price=""
+new_price=""
+graded_price=""
+box_only_price=""
+manual_only_price=""
 
 #prevent script from running more than once
 if [ -f "$LOCK_FILE" ]; then
@@ -23,23 +26,54 @@ fi
 
 printf "Process $$ is running." > "$LOCK_FILE"
 
+#download, scrape and insert into db data for each game
 for (( i=0; i<$num_games; i++ ))
 do
-	#echo ${gameid_list[$i]}
+	#get info of current game
+	gid=${gameid_list[$i]}
+	url=${query_list[$i]}
+	filename="${gameid_list[$i]}.txt" #name of the textfile to be scraped
+	game_owned=${game_list[$i]}
+	box_owned=${box_list[$i]}
+	manual_owned=${manual_list[$i]}
+	sealed=${sealed[$i]}
+	match_str="Loose Price Complete Price New Price Graded Price"
+
 	#download page from url
-	#full_url="https://www.pricecharting.com/game/$title"
-	#printf "Downloading $url...</br>"
-	#printf "filename: $filename</br>"
-	#lynx -dump "$url" > $TMP_DIR/$filename
+	full_url="https://www.pricecharting.com/game/$url"
+	printf "Downloading $url...</br>"
+	lynx -dump "$full_url" > $TMP_DIR/$filename
 
 	#parse data to extract price info
-	#price_list=$(cat $TMP_DIR/$filename | grep [$][0-9][0-9] | grep '^[^[:alpha:]]*$')#redo this, it's not right
-	#echo $price_list
+	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | grep -v '[a-zA-Z]' )
+	echo "$price_str"
+	if [ "$price_str" = "" ]; then
+		printf	"Game not found..."	
+		rm "$TMP_DIR/$filename"
+		continue
+	else
+		price_list=($price_str) #convert string of prices to array 
+		loose_price="${price_list[0]}"
+		complete_price="${price_list[2]}"
+		new_price="${price_list[4]}"
+		graded_price="${price_list[6]}"
+		box_only_price="${price_list[8]}"
+		manual_only_price="${price_list[10]}"
+	fi	
+	
+	printf	"<br/>LOOSE: $loose_price   COMPLETE: $complete_price   NEW: $new_price   GRADED: $graded_price   BOX: $box_only_price   MANUAL: $manual_only_price<br/>"
 
-	#perform sql insert
+	printf "Removing $filename"
 
-done
+#	rm "$TMP_DIR/$filename"
 
-rm -f "$LOCK_FILE"
+#perform sql insert
+#......
 
-exit 0
+	break #just for testing, run loop only once*****************
+
+	done
+
+	rm -f "$LOCK_FILE"
+
+	exit 0
