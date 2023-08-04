@@ -206,7 +206,6 @@ if($result->num_rows > 0){
 		$url_platform = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list);
 		$appraisal_query = $url_platform . "/" . $url_title;
 
-
 		//build arrays from current selection to pass to bash for appraisals
 		array_push($gameid_list, $row['game_id']);
 		array_push($query_list, $appraisal_query);		
@@ -229,7 +228,6 @@ if($result->num_rows > 0){
 			$manual_str = implode(' ', $manual_list);
 			$sealed_str = implode(' ', $sealed_list);
 			$command = "/var/www/html/sh/appraise.sh '$num_games' '$gameid_str' '$query_str' '$game_str' '$box_str' '$manual_str' '$sealed_str' ";
-
 			$output = shell_exec("$command 2>&1 ");
 			echo $output;
 		}	
@@ -243,8 +241,15 @@ $conn->close();
 //make game title usable for pricecharting url
 function adjust_title($title){
 	//add any exceptions here
-	$title = str_replace(array('The Legend of '), '', $title);	
-	//replace spaces with dashes	
+	$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
+	$title = str_replace('Artillery Duel/Chuck Norris Superkicks', 'Artillery Duel & Chuck Norris Superkicks', $title);
+
+	//replace special chars
+	$title = str_replace("ü", "u", $title);
+	$title = str_replace("°", "", $title);
+	$title = str_replace("'", "%27", $title);
+
+	//replace spaces and slashes with dashes	
 	$title = str_replace(array(' ', '/'), '-', $title);
 
 	return $title;
