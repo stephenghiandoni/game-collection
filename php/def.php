@@ -156,7 +156,7 @@ function translate_gid($raw_gid){
 	if($raw_gid === "a2600")
 		return 'Atari-2600';
 	elseif($raw_gid === "famicom")
-		return "famicom";
+		return "Famicom";
 	elseif($raw_gid === "super_famicom")
 		return "Super-Famicom";
 	elseif($raw_gid === "3ds")
@@ -164,23 +164,25 @@ function translate_gid($raw_gid){
 	elseif($raw_gid === "ds")
 		return "Nintendo-DS";
 	elseif($raw_gid === "gb")
-		return "gameboy";
+		return "Gameboy";
 	elseif($raw_gid === "gba")
-		return "gameboy-advance";
+		return "Gameboy-Advance";
 	elseif($raw_gid === "gbc")
-		return "gameboy-color";
+		return "Gameboy-Color";
 	elseif($raw_gid === "n64")
-		return "nintendo-64";
+		return "Nintendo-64";
+	elseif($raw_gid === "gc")
+		return "GameCube";
 	elseif($raw_gid === "nes")
-		return "nes";
+		return "NES";
 	elseif($raw_gid === "snes")
-		return "super-nintendo";
+		return "Super-Nintendo";
 	elseif($raw_gid === "virtual_boy")
-		return "virtual-boy";
+		return "Virtual-Boy";
 	elseif($raw_gid === "wii")
-		return "wii";
+		return "Wii";
 	elseif($raw_gid === "wii-u")
-		return "wii-u";
+		return "Wii-U";
 	elseif($raw_gid === "switch")
 		return 'Nintendo-Switch';
 	elseif($raw_gid === "ps1")
@@ -194,9 +196,9 @@ function translate_gid($raw_gid){
 	elseif($raw_gid === "ps5")
 		return 'Playstation-5';
 	elseif($raw_gid === "psp")
-		return "psp";
+		return "PSP";
 	elseif($raw_gid === "ps_vita")
-		return "playstation-vita";
+		return "Playstation-Vita";
 	elseif($raw_gid === "sms")
 		return 'Sega-Master-System';
 	elseif($raw_gid === "genesis")
@@ -204,11 +206,11 @@ function translate_gid($raw_gid){
 	elseif($raw_gid === "saturn")
 		return 'Sega-Saturn';
 	elseif($raw_gid === "xbox")
-		return "xbox";
+		return "Xbox";
 	elseif($raw_gid === "x360")
-		return "xbox-360";
+		return "Xbox-360";
 	elseif($raw_gid === "xbone")
-		return "xbox-one";
+		return "Xbox-One";
 	else
 		return $raw_gid;
 }
