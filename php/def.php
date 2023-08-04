@@ -1,4 +1,5 @@
 <?php
+//when adding a new gid, must also update translate_gid function(change gid to what pricecharting uses as console name)
 $index = "../index.php";
 $db_options = "db_options.php";
 $games = "games.php";
@@ -154,6 +155,32 @@ $platform_list = array(
 function translate_gid($raw_gid){
 	if($raw_gid === "a2600")
 		return 'Atari-2600';
+	elseif($raw_gid === "famicom")
+		return "famicom";
+	elseif($raw_gid === "super_famicom")
+		return "Super-Famicom";
+	elseif($raw_gid === "3ds")
+		return "Nintendo-3DS";
+	elseif($raw_gid === "ds")
+		return "Nintendo-DS";
+	elseif($raw_gid === "gb")
+		return "gameboy";
+	elseif($raw_gid === "gba")
+		return "gameboy-advance";
+	elseif($raw_gid === "gbc")
+		return "gameboy-color";
+	elseif($raw_gid === "n64")
+		return "nintendo-64";
+	elseif($raw_gid === "nes")
+		return "nes";
+	elseif($raw_gid === "snes")
+		return "super-nintendo";
+	elseif($raw_gid === "virtual_boy")
+		return "virtual-boy";
+	elseif($raw_gid === "wii")
+		return "wii";
+	elseif($raw_gid === "wii-u")
+		return "wii-u";
 	elseif($raw_gid === "switch")
 		return 'Nintendo-Switch';
 	elseif($raw_gid === "ps1")
@@ -166,12 +193,22 @@ function translate_gid($raw_gid){
 		return 'Playstation-4';
 	elseif($raw_gid === "ps5")
 		return 'Playstation-5';
+	elseif($raw_gid === "psp")
+		return "psp";
+	elseif($raw_gid === "ps_vita")
+		return "playstation-vita";
 	elseif($raw_gid === "sms")
 		return 'Sega-Master-System';
 	elseif($raw_gid === "genesis")
 		return 'Sega-Genesis';
 	elseif($raw_gid === "saturn")
 		return 'Sega-Saturn';
+	elseif($raw_gid === "xbox")
+		return "xbox";
+	elseif($raw_gid === "x360")
+		return "xbox-360";
+	elseif($raw_gid === "xbone")
+		return "xbox-one";
 	else
 		return $raw_gid;
 }
