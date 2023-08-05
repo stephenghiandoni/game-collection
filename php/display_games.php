@@ -7,8 +7,8 @@ Can also run appraisal checks
 <head>
 <meta charset="UTF-8">
 <title>Browse Game Collection</title>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="../javascript/appraise.js"></script>
+<!--script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script-->
+<script src="../javascript/display_games.js"></script>
 <link rel="stylesheet" href="css/display_games.css?version=1" type="text/css">
 <?php
 include('def.php');
@@ -38,6 +38,7 @@ if(isset($_POST['back'])){
 //sets current_list var to determine which list of games to process
 if(isset($_POST['platform_filter'])){
 	$current_list = $_POST['pname_drop'];
+	unset($_POST['platform_filter']);
 }
 
 ?>
@@ -78,7 +79,6 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_xbone; ?> >Xbox One</option>
 </select>
 <input type="submit" name="platform_filter" class="button" value="Display"/>
-<!--input type="submit" id="appraise_btn" name="appraise_games" class="button" value="Appraise Games" /-->
 <input type="checkbox" name="run_appraisal" value="Appraise Selection"/>Appraise Selection
 </form>
 
@@ -133,7 +133,10 @@ $result = $conn->query($sql);
 
 if($result->num_rows > 0){	
 	$num_games = 0;//param for bash 
-	//	$current_list =	translate_gid($current_list);
+	$all = false;
+	if($current_list === 'All')
+		$all = true;
+
 	?>
 		<header><h2>List of games for group: <?php echo translate_gid($current_list); ?></h2></header>
 		</br>
@@ -159,20 +162,18 @@ if($result->num_rows > 0){
 		<table border='1' style='border-collapse:collapse' name="game_table" id="game_table" >
 		<tr>
 		<th>Title</th>
+		<?php if($all) echo "<th>Platform</th>"; ?>
 		<th>Owner</th>
 		<th>Game</th>
 		<th>Box</th>
 		<th>Manual</th>
+		<th>Sealed</th>
 		<th>Region</th>
 		</tr>
 
 		<?php
 		$i = 0;
-	$all = false;
-	if($current_list === 'All')
-		$all = true;
-
-	while($row = $result->fetch_assoc()){
+		while($row = $result->fetch_assoc()){
 		//get gid of current result if iterating through all games
 		if($all)
 			$current_list = $row['group_id'];
@@ -181,27 +182,23 @@ if($result->num_rows > 0){
 		if($owner == 1) $owner = "Stephen";
 		else if($owner == 2) $owner = "Jordan";
 		else if($owner == 3) $owner = "Shared";
-		$game = $row['game'];
-		if($game == 1) $game = 'Y';
-		else $game = 'N';
-		$box = $row['box'];
-		if($box == 1) $box = 'Y';
-		else $box = 'N';
-		$manual = $row['manual'];
-		if($manual == 1) $manual = 'Y';
-		else $manual = 'N';
+		$game = (($row['game'] == 0) ? "N" : "Y");
+		$box = (($row['box'] == 0) ? "N" : "Y");
+		$manual = (($row['manual'] == 0) ? "N" : "Y");
+		$sealed = (($row['sealed'] == 0) ? "N" : "Y");
 
 		?>
 			<tr>
 			<td><?php echo $row['title']; ?></td>
+			<?php if($all) echo "<td>" . translate_gid($current_list) . "</td>"; ?>
 			<td><?php echo $owner; ?></td>
 			<td><?php echo $game; ?></td>
 			<td><?php echo $box; ?></td>
 			<td><?php echo $manual; ?></td>
+			<td><?php echo $sealed; ?></td>
 			<td><?php echo $row['region']; ?></td>
 			</tr>
 			<?php
-			$factory_sealed = 0;	//**********THIS NEEDS TO BE ADDED TO DB TABLE*****************
 		$url_title = adjust_title($row['title']);
 		$url_platform = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list);
 		$appraisal_query = $url_platform . "/" . $url_title;
@@ -212,7 +209,7 @@ if($result->num_rows > 0){
 		array_push($game_list, $game);
 		array_push($box_list, $box);
 		array_push($manual_list, $manual);
-		array_push($sealed_list, "N");
+		array_push($sealed_list, $sealed);
 		$num_games++;
 	}
 	?>
@@ -235,10 +232,10 @@ if($result->num_rows > 0){
 }else{
 	echo "Nothing to display...";
 }
-
 $conn->close();
 
-//make game title usable for pricecharting url
+//alters the title of each game that is to be passed to bash script for scraping pricecharting.com
+//some titles have special characters or slightly different title from what is in db
 function adjust_title($title){
 	//add any exceptions here
 	$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
