@@ -1,5 +1,6 @@
 #!/bin/bash
 #This script is executed by display_games.php when the user wants to appraise the list of games in collection
+#It performs the appraisal on the given list of games and inserts in appropriate values into db
 #dependencies: lynx
 
 TMP_DIR="/var/www/html/sh/tmp"
@@ -26,6 +27,7 @@ fi
 
 printf "Process $$ is running." > "$LOCK_FILE"
 
+debug_range=1 #limit/alter range of i for testing
 #download, scrape and insert into db data for each game
 for (( i=0; i<$num_games; i++ ))
 do
@@ -36,8 +38,20 @@ do
 	game_owned=${game_list[$i]}
 	box_owned=${box_list[$i]}
 	manual_owned=${manual_list[$i]}
-	sealed=${sealed[$i]}
+	sealed=${sealed_list[$i]}
 	match_str="Loose Price Complete Price New Price Graded Price"
+	result="" #price to insert
+
+	#printf "</br>SEALED: $sealed   GAME: $game_owned   BOX: $box_owned   MANUAL: $manual_owned</br>"	
+
+	#convert y/n values to boolean for cleaner processing
+	sealed=$( [[ "$sealed" == "Y" ]] && echo "true" || echo "false" )
+	game_owned=$( [[ "$game_owned" == "Y" ]] && echo "true" || echo "false" )
+	box_owned=$( [[ "$box_owned" == "Y" ]] && echo "true" || echo "false" )
+	manual_owned=$( [[ "$manual_owned" == "Y" ]] && echo "true" || echo "false" )
+
+	
+	#printf "</br>SEALED: $sealed   GAME: $game_owned   BOX: $box_owned   MANUAL: $manual_owned</br>"	
 
 	#download page from url
 	full_url="https://www.pricecharting.com/game/$url"
@@ -62,18 +76,51 @@ do
 	fi	
 	
 	printf	"<br/>LOOSE: $loose_price   COMPLETE: $complete_price   NEW: $new_price   GRADED: $graded_price   BOX: $box_only_price   MANUAL: $manual_only_price<br/>"
+	
+	#get the appropriate pricing data based on how much of a game is owned
+	if "$sealed"; then
+		echo "You have this game factory sealed!</br>"
+		result=$new_price
+	elif ! "$game_owned" && ! "$box_owned" && "$manual_owned";then
+		echo "You only have the manual for $url</br>"
+		result=$manual_only_price
+	elif ! "$game_owned" && "$box_owned" && ! "$manual_owned"; then
+		echo "You only have the box for $url<br/>"
+		result=$box_only_price
+	elif "$game_owned" && ! "$box_owned" && ! "$manual_owned"; then
+		echo "You only have the loose game for $url</br>"
+		result=$loose_price
+	elif "$game_owned" && "$box_owned" && ! "$manual_owned"; then
+		echo "You have the game and box but no manual for $url</br>"
+		result=$((complete_price - manual_only_price))
+	elif "$game_owned" && ! "$box_owned" && "$manual_owned"; then
+		echo "You have the game and manual but no box for $url</br>"	
+		result=$((complete_price - box_only_price))
+	elif ! "$game_owned" && "$box_owned" && "$manual_owned"; then
+		echo "You have the box and manual but not the game for $url</br>"	
+		result=$((box_only_price + manual_only_price))
+	elif "$game_owned" && "$box_owned" && "$manual_owned"; then
+		echo "You have $url complete!</br>"	
+		result=$complete_price
+	else
+		echo "Error: Neither game, box nor manual found in db for $url...</br>"
+	fi
 
-	printf "Removing $filename"
-
+	echo "INSERTING: $result</br>"
+#	printf "Removing $filename"
+#
 #	rm "$TMP_DIR/$filename"
+	
+	#perform sql insert
+	#......
+	
+	#just for testing, only run a few games	
+	if [ $i -eq $debug_range ]; then
+		break
+	fi
 
-#perform sql insert
-#......
+done #****End For Loop****
 
-	break #just for testing, run loop only once*****************
+rm -f "$LOCK_FILE"
 
-	done
-
-	rm -f "$LOCK_FILE"
-
-	exit 0
+exit 0
