@@ -3,6 +3,7 @@
 #It performs the appraisal on the given list of games and inserts in appropriate values into db
 #dependencies: lynx
 
+source ../../sensitive.sh
 TMP_DIR="/var/www/html/sh/tmp"
 LOCK_FILE="$TMP_DIR/appraise.lock"
 num_games=$1
@@ -41,8 +42,9 @@ do
 	sealed=${sealed_list[$i]}
 	match_str="Loose Price Complete Price New Price Graded Price"
 	result="" #price to insert
-
-	#printf "</br>SEALED: $sealed   GAME: $game_owned   BOX: $box_owned   MANUAL: $manual_owned</br>"	
+	current_date=$(date +"%Y-%m-%d %H:%M:%S")
+	
+	printf "</br>DATE: $current_date</br>"
 
 	#convert y/n values to boolean for cleaner processing
 	sealed=$( [[ "$sealed" == "Y" ]] && echo "true" || echo "false" )
@@ -92,10 +94,10 @@ do
 		result=$loose_price
 	elif "$game_owned" && "$box_owned" && ! "$manual_owned"; then
 		echo "You have the game and box but no manual for $url</br>"
-		result=$((complete_price - manual_only_price))
+		result=$((loose_price + box_only_price))
 	elif "$game_owned" && ! "$box_owned" && "$manual_owned"; then
 		echo "You have the game and manual but no box for $url</br>"	
-		result=$((complete_price - box_only_price))
+		result=$((loose_price + manual_only_price))
 	elif ! "$game_owned" && "$box_owned" && "$manual_owned"; then
 		echo "You have the box and manual but not the game for $url</br>"	
 		result=$((box_only_price + manual_only_price))
@@ -106,14 +108,18 @@ do
 		echo "Error: Neither game, box nor manual found in db for $url...</br>"
 	fi
 
-	echo "INSERTING: $result</br>"
 #	printf "Removing $filename"
 #
 #	rm "$TMP_DIR/$filename"
-	
+
 	#perform sql insert
-	#......
-	
+	result=`echo $result | tr -d '$'`
+	echo "INSERTING: $gid $current_date $result</br>"
+	sql_insert="INSERT INTO Game_Value(game_id, search_date, value) VALUES ('$gid', '$current_date', $result);"
+	mysql --user="$db_user" --password="$db_pass" "$db_name" <<END_SQL_INSERT
+	$sql_insert;
+END_SQL_INSERT
+
 	#just for testing, only run a few games	
 	if [ $i -eq $debug_range ]; then
 		break
