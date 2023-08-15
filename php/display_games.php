@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- 
 Script used to display Collection DB
-Can also run appraisal checks
+Can also run appraisals for each game
 -->
 <html>
 <head>
@@ -13,6 +13,8 @@ Can also run appraisal checks
 <?php
 include('def.php');
 include('/var/www/sensitive.php');
+$tmp_path = '/var/www/html/sh/tmp';
+$lock_file = '/var/www/html/sh/tmp/appraise.lock';
 $current_list = "";
 $gameid_list = array();//arrays to pass to bash for appraisals
 $query_list = array();
@@ -79,7 +81,9 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_xbone; ?> >Xbox One</option>
 </select>
 <input type="submit" name="platform_filter" class="button" value="Display"/>
-<input type="checkbox" name="run_appraisal" value="Appraise Selection"/>Appraise Selection
+<?php echo '<input type="checkbox" name="run_appraisal" value="Appraise Selection" ' . ((is_file($lock_file)) ? 'disabled' : '') . '>';
+echo ((is_file($lock_file)) ? 'Appraisal already running, check back later...' : "Appraise Selection");
+?>
 </form>
 
 <form method="post">
@@ -216,7 +220,7 @@ if($result->num_rows > 0){
 
 		</table>
 		<?php
-		//appraisal checkbox, if set call script pass game data
+		//appraisal checkbox, if set call script and pass game data
 		if (isset($_POST['run_appraisal'])){
 			$gameid_str = implode(' ', $gameid_list);
 			$query_str = implode(' ', $query_list);
@@ -225,12 +229,13 @@ if($result->num_rows > 0){
 			$manual_str = implode(' ', $manual_list);
 			$sealed_str = implode(' ', $sealed_list);
 			$command = "/var/www/html/sh/appraise.sh '$num_games' '$gameid_str' '$query_str' '$game_str' '$box_str' '$manual_str' '$sealed_str' ";
-			$output = shell_exec("$command 2>&1 ");
-			echo $output;
+			//$output = shell_exec("$command 2>&1 ");
+			exec("$command > /dev/null 2>&1 &");
+			//echo $output;
 		}	
 
 }else{
-	echo "Nothing to display...";
+	echo "Please select a list of games from the dropdown menu.";
 }
 $conn->close();
 
@@ -240,6 +245,8 @@ function adjust_title($title){
 	//add any exceptions here
 	$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
 	$title = str_replace('Artillery Duel/Chuck Norris Superkicks', 'Artillery Duel & Chuck Norris Superkicks', $title);
+	$title = str_replace('\'s Pro Skater', '', $title);
+	$title = str_replace('TimeSplitters', 'Time-Splitters', $title);
 
 	//replace special chars
 	$title = str_replace("ü", "u", $title);
