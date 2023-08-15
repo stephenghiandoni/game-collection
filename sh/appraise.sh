@@ -6,6 +6,7 @@
 source ../../sensitive.sh
 TMP_DIR="/var/www/html/sh/tmp"
 LOCK_FILE="$TMP_DIR/appraise.lock"
+LOG_FILE="$TMP_DIR/games.log"
 num_games=$1
 gameid_list=($2) #convert params back into arrays 
 query_list=($3)
@@ -26,12 +27,22 @@ if [ -f "$LOCK_FILE" ]; then
 	exit 1
 fi
 
-printf "Process $$ is running." > "$LOCK_FILE"
 
-debug_range=1 #limit/alter range of i for testing
+printf "Process $$ is running." > "$LOCK_FILE" 
+printf "" > $LOG_FILE #start new log	
+
+#LOOP FOR TESTING, REMOVE THIS
+#for (( i=0; i<2; i++ ))
+#do
+#	touch $TMP_DIR/"file$i.txt"
+#	sleep 5
+#done
+
+num_games=2 #limit/alter range of i for testing
 #download, scrape and insert into db data for each game
 for (( i=0; i<$num_games; i++ ))
 do
+	#sleep 5
 	#get info of current game
 	gid=${gameid_list[$i]}
 	url=${query_list[$i]}
@@ -44,7 +55,7 @@ do
 	result="" #price to insert
 	current_date=$(date +"%Y-%m-%d %H:%M:%S")
 	
-	printf "</br>DATE: $current_date</br>"
+	printf "DATE: $current_date" >> $LOG_FILE
 
 	#convert y/n values to boolean for cleaner processing
 	sealed=$( [[ "$sealed" == "Y" ]] && echo "true" || echo "false" )
@@ -57,14 +68,14 @@ do
 
 	#download page from url
 	full_url="https://www.pricecharting.com/game/$url"
-	printf "Downloading $url...</br>"
+	printf "Downloading $url..." >> $LOG_FILE
 	lynx -dump "$full_url" > $TMP_DIR/$filename
 
 	#parse data to extract price info
-	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | grep -v '[a-zA-Z]' )
-	echo "$price_str"
+	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | grep -v '[a-zA-Z]' | tr -d '$')
+	printf "$price_str" >> $LOG_FILE
 	if [ "$price_str" = "" ]; then
-		printf	"Game not found..."	
+		printf	"Game not found..."	>> $LOG_FILE
 		rm "$TMP_DIR/$filename"
 		continue
 	else
@@ -77,53 +88,47 @@ do
 		manual_only_price="${price_list[10]}"
 	fi	
 	
-	printf	"<br/>LOOSE: $loose_price   COMPLETE: $complete_price   NEW: $new_price   GRADED: $graded_price   BOX: $box_only_price   MANUAL: $manual_only_price<br/>"
+	printf	"LOOSE: $loose_price   COMPLETE: $complete_price   NEW: $new_price   GRADED: $graded_price   BOX: $box_only_price   MANUAL: $manual_only_price" >> $LOG_FILE
 	
 	#get the appropriate pricing data based on how much of a game is owned
 	if "$sealed"; then
-		echo "You have this game factory sealed!</br>"
+		echo "You have this game factory sealed!" >> $LOG_FILE
 		result=$new_price
 	elif ! "$game_owned" && ! "$box_owned" && "$manual_owned";then
-		echo "You only have the manual for $url</br>"
+		echo "You only have the manual for $url" >> $LOG_FILE
 		result=$manual_only_price
 	elif ! "$game_owned" && "$box_owned" && ! "$manual_owned"; then
-		echo "You only have the box for $url<br/>"
+		echo "You only have the box for $url" >> $LOG_FILE
 		result=$box_only_price
 	elif "$game_owned" && ! "$box_owned" && ! "$manual_owned"; then
-		echo "You only have the loose game for $url</br>"
+		echo "You only have the loose game for $url" >> $LOG_FILE
 		result=$loose_price
 	elif "$game_owned" && "$box_owned" && ! "$manual_owned"; then
-		echo "You have the game and box but no manual for $url</br>"
-		result=$((loose_price + box_only_price))
+		echo "You have the game and box but no manual for $url" >> $LOG_FILE
+		result=$(echo "$loose_price + $box_only_price" | bc -l)
 	elif "$game_owned" && ! "$box_owned" && "$manual_owned"; then
-		echo "You have the game and manual but no box for $url</br>"	
-		result=$((loose_price + manual_only_price))
+		echo "You have the game and manual but no box for $url"	 >> $LOG_FILE
+		result=$(echo "$loose_price + $manual_only_price" | bc -l)
 	elif ! "$game_owned" && "$box_owned" && "$manual_owned"; then
-		echo "You have the box and manual but not the game for $url</br>"	
-		result=$((box_only_price + manual_only_price))
+		echo "You have the box and manual but not the game for $url" >> $LOG_FILE
+		result=$(echo "$box_only_price + $manual_only_price" | bc -l)
 	elif "$game_owned" && "$box_owned" && "$manual_owned"; then
-		echo "You have $url complete!</br>"	
+		echo "You have $url complete!" >> $LOG_FILE
 		result=$complete_price
 	else
-		echo "Error: Neither game, box nor manual found in db for $url...</br>"
+		echo "Error: Neither game, box nor manual found in db for $url..." >> $LOG_FILE
 	fi
 
 #	printf "Removing $filename"
 #
-#	rm "$TMP_DIR/$filename"
+#	rm -f "$TMP_DIR/$filename"
 
 	#perform sql insert
-	result=`echo $result | tr -d '$'`
-	echo "INSERTING: $gid $current_date $result</br>"
-	sql_insert="INSERT INTO Game_Value(game_id, search_date, value) VALUES ('$gid', '$current_date', $result);"
-	mysql --user="$db_user" --password="$db_pass" "$db_name" <<END_SQL_INSERT
-	$sql_insert;
-END_SQL_INSERT
-
-	#just for testing, only run a few games	
-	if [ $i -eq $debug_range ]; then
-		break
-	fi
+	printf "INSERTING: $gid $current_date $result" >> $LOG_FILE
+#	sql_insert="INSERT INTO Game_Value(game_id, search_date, value) VALUES ('$gid', '$current_date', $result);"
+#	mysql --user="$db_user" --password="$db_pass" "$db_name" <<END_SQL_INSERT
+#	$sql_insert;
+#END_SQL_INSERT
 
 done #****End For Loop****
 
