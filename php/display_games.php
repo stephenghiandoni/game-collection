@@ -203,7 +203,7 @@ if($result->num_rows > 0){
 			<td><?php echo $row['region']; ?></td>
 			</tr>
 			<?php
-		$url_title = adjust_title($row['title']);
+		$url_title = adjust_title($row['title'], $row['region']);
 		$url_platform = (($row['region'] == "NTSC" ) ? "" : translate_region($row['region'])) . translate_gid($current_list);
 		$appraisal_query = $url_platform . "/" . $url_title;
 
@@ -222,6 +222,7 @@ if($result->num_rows > 0){
 		<?php
 		//appraisal checkbox, if set call script and pass game data
 		if (isset($_POST['run_appraisal'])){
+			dump_arr($query_list);
 			$gameid_str = implode(' ', $gameid_list);
 			$query_str = implode(' ', $query_list);
 			$game_str = implode(' ', $game_list);
@@ -229,8 +230,8 @@ if($result->num_rows > 0){
 			$manual_str = implode(' ', $manual_list);
 			$sealed_str = implode(' ', $sealed_list);
 			$command = "/var/www/html/sh/appraise.sh '$num_games' '$gameid_str' '$query_str' '$game_str' '$box_str' '$manual_str' '$sealed_str' ";
+			//exec("$command > /dev/null 2>&1 &");
 			//$output = shell_exec("$command 2>&1 ");
-			exec("$command > /dev/null 2>&1 &");
 			//echo $output;
 		}	
 
@@ -241,12 +242,22 @@ $conn->close();
 
 //alters the title of each game that is to be passed to bash script for scraping pricecharting.com
 //some titles have special characters or slightly different title from what is in db
-function adjust_title($title){
-	//add any exceptions here
-	$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
-	$title = str_replace('Artillery Duel/Chuck Norris Superkicks', 'Artillery Duel & Chuck Norris Superkicks', $title);
+function adjust_title($title, $region){
+	//add specific title exceptions here
 	$title = str_replace('\'s Pro Skater', '', $title);
+	$title = str_replace('Artillery Duel/Chuck Norris Superkicks', 'Artillery Duel & Chuck Norris Superkicks', $title);
+	$title = str_replace('Eternal Darkness: Sanity\'s Requiem', 'Eternal Darkness', $title);
+	$title = str_replace('GameBoy Player', 'GameBoy Player Start Up Disc', $title);
+	$title = str_replace('James Bond 007: NightFire', '007 NightFire', $title);
+	$title = str_replace('Paper Mario: The Thousand-Year Door', 'Paper Mario Thousand Year Door', $title);
+	$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
+	$title = str_replace('The Official Game of the Movie', '', $title);
+	$title = str_replace('The Lord of the Rings: The Return of the King', 'Lord of the Rings: Return of the King', $title);
+	$title = str_replace('The Wind Waker', 'Wind Waker', $title);
 	$title = str_replace('TimeSplitters', 'Time-Splitters', $title);
+	$title = str_replace('WarioWare, Inc.: Mega Party Game$', 'Wario Ware Mega Party Games', $title);
+//	$title = str_replace('', '', $title);
+	($region == "NTSC") ? $title = preg_replace("/\bDonkey Konga\b/", 'Donkey Konga Game Only', $title) : $title = $title;
 
 	//replace special chars
 	$title = str_replace("ü", "u", $title);
@@ -257,6 +268,11 @@ function adjust_title($title){
 	$title = str_replace(array(' ', '/'), '-', $title);
 
 	return $title;
+}
+
+function dump_arr($arr){
+	foreach ($arr as $element)
+		echo $element . "<br>";
 }
 
 ?>
