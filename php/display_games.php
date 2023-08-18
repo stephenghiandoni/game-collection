@@ -220,9 +220,10 @@ if($result->num_rows > 0){
 
 		</table>
 		<?php
+
 		//appraisal checkbox, if set call script and pass game data
 		if (isset($_POST['run_appraisal'])){
-			dump_arr($query_list);
+			//dump_arr($query_list);
 			$gameid_str = implode(' ', $gameid_list);
 			$query_str = implode(' ', $query_list);
 			$game_str = implode(' ', $game_list);
@@ -230,7 +231,7 @@ if($result->num_rows > 0){
 			$manual_str = implode(' ', $manual_list);
 			$sealed_str = implode(' ', $sealed_list);
 			$command = "/var/www/html/sh/appraise.sh '$num_games' '$gameid_str' '$query_str' '$game_str' '$box_str' '$manual_str' '$sealed_str' ";
-			//exec("$command > /dev/null 2>&1 &");
+			exec("$command > /dev/null 2>&1 &");
 			//$output = shell_exec("$command 2>&1 ");
 			//echo $output;
 		}	
@@ -245,23 +246,50 @@ $conn->close();
 function adjust_title($title, $region){
 	//add specific title exceptions here
 	$title = str_replace('\'s Pro Skater', '', $title);
+	$title = str_replace(' (2002)', '', $title);
+	$title = str_replace(' Version: Special Pikachu Edition', '', $title);
+	$title = str_replace(': Diddy\'s Kong Quest', '', $title);
+	$title = str_replace(': Dixie Kong\'s Double Trouble!', '', $title);
+	$title = str_replace(': The Official Game of the Movie', '', $title);
+	$title = str_replace('358/2', '3582', $title);
 	$title = str_replace('Artillery Duel/Chuck Norris Superkicks', 'Artillery Duel & Chuck Norris Superkicks', $title);
+	$title = str_replace('Brain Age 2: More Training in Minutes a Day!', 'Brain Age 2', $title);
+	$title = str_replace('Bio F.R.E.A.K.S.', 'Biofreaks', $title);
+	$title = str_replace('DuckTales', 'Duck Tales', $title);
 	$title = str_replace('Eternal Darkness: Sanity\'s Requiem', 'Eternal Darkness', $title);
 	$title = str_replace('GameBoy Player', 'GameBoy Player Start Up Disc', $title);
+	$title = str_replace('Gold Version', 'Gold', $title);
+	$title = str_replace('Hangtime', 'Hang Time', $title);
+	$title = str_replace('HeartGold', 'HeartGold Version', $title);
 	$title = str_replace('James Bond 007: NightFire', '007 NightFire', $title);
+	$title = str_replace('John Romero\'s ', '', $title);
+	$title = str_replace('Kingdom Hearts II', 'Kingdom Hearts 2', $title);
+	$title = str_replace('LeafGreen', 'Leaf Green', $title);
 	$title = str_replace('Paper Mario: The Thousand-Year Door', 'Paper Mario Thousand Year Door', $title);
+	$title = str_replace('Pocket Monsters', 'Pokemon', $title);
+	$title = str_replace('Road Rash 64', 'Road Rash', $title);
+	$title = str_replace('Silkworm', 'Silk Worm', $title);
+	$title = str_replace('Silver Version', 'Silver', $title);
+	$title = str_replace('SoulSilver', 'SoulSilver Version', $title);
+	$title = str_replace('Spider Man', 'Spiderman', $title);
+	$title = str_replace('The Ancient Ship', 'Ancient Ship', $title);
+	$title = str_replace('The Elder Scrolls', 'Elder Scrolls', $title);
+	$title = str_replace('The Great Escape', 'Great Escape', $title);
 	$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
-	$title = str_replace('The Official Game of the Movie', '', $title);
+	$title = str_replace('The Legend of Kage', 'Legend of Kage', $title);	
 	$title = str_replace('The Lord of the Rings: The Return of the King', 'Lord of the Rings: Return of the King', $title);
 	$title = str_replace('The Wind Waker', 'Wind Waker', $title);
 	$title = str_replace('TimeSplitters', 'Time-Splitters', $title);
 	$title = str_replace('WarioWare, Inc.: Mega Party Game$', 'Wario Ware Mega Party Games', $title);
 //	$title = str_replace('', '', $title);
-	($region == "NTSC") ? $title = preg_replace("/\bDonkey Konga\b/", 'Donkey Konga Game Only', $title) : $title = $title;
+
+	if ($region == "NTSC" && $title != "Donkey Konga 2") 
+		$title = str_replace('Donkey Konga', 'Donkey Konga Game Only', $title);
 
 	//replace special chars
-	$title = str_replace("ü", "u", $title);
-	$title = str_replace("°", "", $title);
+	$title = str_replace(array('°', '.', ',', '!'), '', $title);
+	$title = str_replace('é', 'e', $title);
+	$title = str_replace('ü', 'u', $title);
 	$title = str_replace("'", "%27", $title);
 
 	//replace spaces and slashes with dashes	
