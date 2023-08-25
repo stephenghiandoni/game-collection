@@ -60,6 +60,7 @@ $csv_path_ps3_3 = "../csv/ps3_3.csv";
 $csv_path_ps3_4 = "../csv/ps3_4.csv";
 $csv_path_ps4_1 = "../csv/ps4_1.csv";
 $csv_path_ps4_2 = "../csv/ps4_2.csv";
+$csv_path_ps5_1 = "../csv/ps5_1.csv";
 $csv_path_psp = "../csv/psp.csv";
 $csv_path_ps_vita_1 = "../csv/ps_vita_1.csv";
 $csv_path_ps_vita_2 = "../csv/ps_vita_2.csv";

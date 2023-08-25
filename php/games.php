@@ -65,6 +65,7 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_ps2; ?> >PlayStation 2</option>
 <option value=<?php echo $gid_ps3; ?> >PlayStation 3</option>
 <option value=<?php echo $gid_ps4; ?> >PlayStation 4</option>
+<option value=<?php echo $gid_ps5; ?> >PlayStation 5</option>
 <option value=<?php echo $gid_psp; ?> >PSP</option>
 <option value=<?php echo $gid_ps_vita; ?> >PS Vita</option>
 <option value=<?php echo $gid_saturn; ?> >Saturn</option>
@@ -285,6 +286,7 @@ if(isset($_POST['populate'])){
 //	pop_from_csv($conn, $csv_path_ps3_4, $gid_ps3);
 //	pop_from_csv($conn, $csv_path_ps4_1, $gid_ps4);
 //	pop_from_csv($conn, $csv_path_ps4_2, $gid_ps4);
+	pop_from_csv($conn, $csv_path_ps5_1, $gid_ps5);
 //	pop_from_csv($conn, $csv_path_psp, $gid_psp);
 //	pop_from_csv($conn, $csv_path_ps_vita_1, $gid_ps_vita);
 //	pop_from_csv($conn, $csv_path_ps_vita_2, $gid_ps_vita);
