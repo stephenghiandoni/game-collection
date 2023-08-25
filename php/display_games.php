@@ -67,6 +67,7 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_ps2; ?> >PlayStation 2</option>
 <option value=<?php echo $gid_ps3; ?> >PlayStation 3</option>
 <option value=<?php echo $gid_ps4; ?> >PlayStation 4</option>
+<option value=<?php echo $gid_ps5; ?> >PlayStation 5</option>
 <option value=<?php echo $gid_psp; ?> >PSP</option>
 <option value=<?php echo $gid_ps_vita; ?> >PS Vita</option>
 <option value=<?php echo $gid_saturn; ?> >Saturn</option>
@@ -112,25 +113,47 @@ if($result->num_rows > 0){
 	echo "Owner table empty...";
 }	
 
+//get value data for latest search of each entry
+$sql = "SELECT gv.game_id, gv.value, gv.search_date FROM Game_Value as gv join (
+			SELECT game_id, MAX(search_date) as max_date from Game_Value GROUP BY game_id ) 
+		gv2 ON gv.game_id = gv2.game_id AND gv.search_date = gv2.max_date";
+$result = $conn->query($sql);
+$platform_value = 0;
+$collection_value = 0;
+$gids = array();
+$values = array();
+$search_dates = array();
+
+//get latest value of entire collection and save arrays for displaying individual game values and platform values
+while($row = $result->fetch_assoc()){
+	$collection_value += $row['value'];
+	array_push($gids, $row['game_id']);
+	array_push($values, $row['value']);
+	array_push($search_dates, $row['search_date']);
+}
+
+//query gids to generate platform value
+for($i = 0; $i < count($gids); $i++){
+	$sql = "SELECT games.group_id FROM Games_Owned as games WHERE games.game_id = " . $gids[$i];
+	$result = $conn->query($sql);
+	$row = $result->fetch_assoc();
+	if ($row['group_id'] === $current_list) $platform_value += $values[$i];
+}
+
 //gather totals 
 $sql = "SELECT * from Games_Owned";
 $result = $conn->query($sql);
 $total = $result->num_rows;
-
 $count_games = array(0, 0, 0);//stephen, jordan, shared
-
-//set group id if a specific console is selected, otherwise display all games owned
-$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = 1";
-$result = $conn->query($sql);
-$count_games[0] = $result->num_rows;
-
-$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = 2";
-$result = $conn->query($sql);
-$count_games[1] = $result->num_rows;
-
-$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = 3";
-$result = $conn->query($sql);
-$count_games[2] = $result->num_rows;
+$platform_total = 0;
+for($i = 0; $i < count($count_games); $i++){
+	$sql = "SELECT * from Games_Owned where" . (($current_list == "All") ? " " :  " group_id = '$current_list' and ") . "owner_id = " . ($i+1);
+	$result = $conn->query($sql);
+	while($row = $result->fetch_assoc()){
+		$count_games[$i] += $row['weight'];
+		$platform_total += $row['weight'];
+	}
+}
 
 $sql = "SELECT * from Games_Owned" . (($current_list == "All") ? " " :  " where group_id = '$current_list' ") . "ORDER BY title";
 $result = $conn->query($sql);
@@ -152,13 +175,17 @@ if($result->num_rows > 0){
 		<th>Shared</th>
 		<th>Platform Total</th>
 		<th>Collection Total</th>
+		<th>Platform Value (USD)</th>
+		<th>Collection Value (USD)</th>
 		</tr>
 		<tr>
 		<td> <?php echo $count_games[0]; ?> </td>
 		<td> <?php echo $count_games[1]; ?> </td>
 		<td> <?php echo $count_games[2]; ?> </td>
-		<td> <?php echo $result->num_rows; ?> </td>
+		<td> <?php echo $platform_total; ?> </td>
 		<td> <?php echo $total; ?> </td>
+		<td> <?php echo ($current_list != "All") ? '$' . number_format($platform_value, 2) : '$' . number_format($collection_value, 2); ?></td>
+		<td> <?php echo '$' . number_format($collection_value, 2); ?> </td>
 		</tr>
 		</table>
 		</br></br>
@@ -173,6 +200,8 @@ if($result->num_rows > 0){
 		<th>Manual</th>
 		<th>Sealed</th>
 		<th>Region</th>
+		<th>Value (USD)</th>
+		<th>Value Date</th>
 		</tr>
 
 		<?php
@@ -191,6 +220,18 @@ if($result->num_rows > 0){
 		$manual = (($row['manual'] == 0) ? "N" : "Y");
 		$sealed = (($row['sealed'] == 0) ? "N" : "Y");
 
+		$current_price = 'N/A';
+		$price_date = 'N/A';
+		//find which index contains each game's value and value date
+		for($i = 0; $i < count($gids); $i++){
+			if($gids[$i] === $row['game_id']){
+				$current_price = $values[$i];
+				$price_date = "$search_dates[$i]";
+				$platform_value += $current_price;
+				break;
+			}	
+		} 
+
 		?>
 			<tr>
 			<td><?php echo $row['title']; ?></td>
@@ -201,6 +242,8 @@ if($result->num_rows > 0){
 			<td><?php echo $manual; ?></td>
 			<td><?php echo $sealed; ?></td>
 			<td><?php echo $row['region']; ?></td>
+			<td><?php echo ($current_price != "N/A") ? '$' . number_format($current_price, 2) : $current_price; ?></td>
+			<td><?php echo $price_date; ?></td>
 			</tr>
 			<?php
 		
@@ -233,7 +276,7 @@ if($result->num_rows > 0){
 
 		//appraisal checkbox, if set call script and pass game data
 		if (isset($_POST['run_appraisal'])){
-			dump_arr($query_list);
+			//dump_arr($query_list);
 			$gameid_str = implode(' ', $gameid_list);
 			$query_str = implode(' ', $query_list);
 			$game_str = implode(' ', $game_list);
@@ -241,7 +284,7 @@ if($result->num_rows > 0){
 			$manual_str = implode(' ', $manual_list);
 			$sealed_str = implode(' ', $sealed_list);
 			$command = "/var/www/html/sh/appraise.sh '$num_games' '$gameid_str' '$query_str' '$game_str' '$box_str' '$manual_str' '$sealed_str' ";
-			//exec("$command > /dev/null 2>&1 &");
+			exec("$command > /dev/null 2>&1 &");
 			//$output = shell_exec("$command 2>&1 ");
 			//echo $output;
 		}	
@@ -301,6 +344,7 @@ function adjust_title($title, $region){
 	$title = str_replace('Hangtime', 'Hang Time', $title);
 	$title = str_replace('HeartGold', 'HeartGold Version', $title);
 	$title = str_replace('Ico Shadow of the Colossus HD', 'Ico & Shadow of the Colossus Collection', $title);
+	$title = str_replace('Irodzuki Tincle no Koi no Balloon Trip', 'Tingle\'s Balloon Trip Of Love', $title);
 	$title = str_replace('Ironsword', 'Iron Sword', $title);
 	$title = str_replace('Jak and Daxter HD Collection', 'Jak & Daxter Collection', $title);
 	$title = str_replace('James Bond 007: NightFire', '007 NightFire', $title);
@@ -310,6 +354,7 @@ function adjust_title($title, $region){
 	$title = str_replace('Mario & Luigi: Dream Team', 'Mario And Luigi: Dream Team', $title);
 	$title = str_replace('Monster Truck Madness 64', 'Monster Truck Madness', $title);
 	$title = str_replace('Nicklaus\'', 'Nicklaus', $title);
+	$title = str_replace('Nine Hours, Nine Persons, Nine Doors', '999 9 Hours 9 Persons 9 Doors', $title);
 	$title = str_replace('Paper Mario: The Thousand-Year Door', 'Paper Mario Thousand Year Door', $title);
 	$title = str_replace('Pocket Monsters', 'Pokemon', $title);
 	$title = str_replace('Ratchet & Clank HD Collection', 'Ratchet & Clank Collection', $title);
@@ -359,6 +404,7 @@ function adjust_title($title, $region){
 	$title = str_replace(array('°', '.', ',', '!', '#'), '', $title);
 	$title = str_replace('é', 'e', $title);
 	$title = str_replace('ü', 'u', $title);
+	$title = str_replace('ö', 'o', $title);
 	$title = str_replace("'", "%27", $title);
 
 	//replace spaces and slashes with dashes	
