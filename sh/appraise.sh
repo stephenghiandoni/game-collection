@@ -7,6 +7,7 @@ source ../../sensitive.sh
 TMP_DIR="/var/www/html/sh/tmp"
 LOCK_FILE="$TMP_DIR/appraise.lock"
 LOG_FILE="$TMP_DIR/games.log"
+ERR_LOG_FILE="$TMP_DIR/err.log"
 num_games=$1
 gameid_list=($2) #convert params back into arrays 
 query_list=($3)
@@ -27,22 +28,17 @@ if [ -f "$LOCK_FILE" ]; then
 	exit 1
 fi
 
-
 printf "Process $$ is running." > "$LOCK_FILE" 
-printf "" > $LOG_FILE #start new log	
+printf "" > $LOG_FILE #wipe logs
+printf "" > $ERR_LOG_FILE
 
-#LOOP FOR TESTING, REMOVE THIS
-#for (( i=0; i<2; i++ ))
-#do
-#	touch $TMP_DIR/"file$i.txt"
-#	sleep 5
-#done
-
-num_games=2 #limit/alter range of i for testing
+#num_games=2  #limit/alter range of i for testing
 #download, scrape and insert into db data for each game
 for (( i=0; i<$num_games; i++ ))
 do
-	#sleep 5
+	sleep_time=$((10 + RANDOM % (30 - 10 + 1) ))
+	printf "Sleeping $sleep_time seconds...\n" >> $LOG_FILE
+	sleep $sleep_time 
 	#get info of current game
 	gid=${gameid_list[$i]}
 	url=${query_list[$i]}
@@ -55,7 +51,7 @@ do
 	result="" #price to insert
 	current_date=$(date +"%Y-%m-%d %H:%M:%S")
 	
-	printf "DATE: $current_date" >> $LOG_FILE
+	printf "DATE: $current_date\n" >> $LOG_FILE
 
 	#convert y/n values to boolean for cleaner processing
 	sealed=$( [[ "$sealed" == "Y" ]] && echo "true" || echo "false" )
@@ -75,8 +71,8 @@ do
 	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | grep -v '[a-zA-Z]' | tr -d '$')
 	printf "$price_str" >> $LOG_FILE
 	if [ "$price_str" = "" ]; then
-		printf	"Game not found..."	>> $LOG_FILE
-		rm "$TMP_DIR/$filename"
+		printf	"$url not found...\n\n"	>> $ERR_LOG_FILE
+		rm -f "$TMP_DIR/$filename"
 		continue
 	else
 		price_list=($price_str) #convert string of prices to array 
@@ -88,7 +84,7 @@ do
 		manual_only_price="${price_list[10]}"
 	fi	
 	
-	printf	"LOOSE: $loose_price   COMPLETE: $complete_price   NEW: $new_price   GRADED: $graded_price   BOX: $box_only_price   MANUAL: $manual_only_price" >> $LOG_FILE
+	printf	"\nLOOSE: $loose_price   COMPLETE: $complete_price   NEW: $new_price   GRADED: $graded_price   BOX: $box_only_price   MANUAL: $manual_only_price\n" >> $LOG_FILE
 	
 	#get the appropriate pricing data based on how much of a game is owned
 	if "$sealed"; then
@@ -119,16 +115,14 @@ do
 		echo "Error: Neither game, box nor manual found in db for $url..." >> $LOG_FILE
 	fi
 
-#	printf "Removing $filename"
-#
-#	rm -f "$TMP_DIR/$filename"
+	rm -f "$TMP_DIR/$filename"
 
 	#perform sql insert
-	printf "INSERTING: $gid $current_date $result" >> $LOG_FILE
-#	sql_insert="INSERT INTO Game_Value(game_id, search_date, value) VALUES ('$gid', '$current_date', $result);"
-#	mysql --user="$db_user" --password="$db_pass" "$db_name" <<END_SQL_INSERT
-#	$sql_insert;
-#END_SQL_INSERT
+	printf "INSERTING: $gid $current_date $result\n\n" >> $LOG_FILE
+	sql_insert="INSERT INTO Game_Value(game_id, search_date, value) VALUES ('$gid', '$current_date', $result);"
+	mysql --user="$db_user" --password="$db_pass" "$db_name" <<END_SQL_INSERT
+	$sql_insert;
+END_SQL_INSERT
 
 done #****End For Loop****
 
