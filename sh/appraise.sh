@@ -36,7 +36,7 @@ printf "" > $ERR_LOG_FILE
 #download, scrape and insert into db data for each game
 for (( i=0; i<$num_games; i++ ))
 do
-	sleep_time=$((10 + RANDOM % (30 - 10 + 1) ))
+	sleep_time=$((5 + RANDOM % (15 - 5 + 1) ))
 	printf "Sleeping $sleep_time seconds...\n" >> $LOG_FILE
 	sleep $sleep_time 
 	#get info of current game
@@ -68,7 +68,8 @@ do
 	lynx -dump "$full_url" > $TMP_DIR/$filename
 
 	#parse data to extract price info
-	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | grep -v '[a-zA-Z]' | tr -d '$')
+	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | tail -n 2 | tr -d '$')
+
 	printf "$price_str" >> $LOG_FILE
 	if [ "$price_str" = "" ]; then
 		printf	"$url not found...\n\n"	>> $ERR_LOG_FILE
