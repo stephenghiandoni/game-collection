@@ -141,9 +141,14 @@ for($i = 0; $i < count($gids); $i++){
 }
 
 //gather totals 
-$sql = "SELECT * from Games_Owned";
+$sql = "SELECT SUM(weight) as total_games FROM Games_Owned";
 $result = $conn->query($sql);
-$total = $result->num_rows;
+if($result->num_rows > 0){
+	$row= $result->fetch_assoc();
+	$total = $row['total_games'];
+}else{
+	$total = 0;
+}
 $count_games = array(0, 0, 0);//stephen, jordan, shared
 $platform_total = 0;
 for($i = 0; $i < count($count_games); $i++){
@@ -257,7 +262,7 @@ if($result->num_rows > 0){
 		}else{
 			$url_platform = (($row['region'] == "NTSC") ? "" : translate_region($row['region'])) . translate_gid($current_list);
 		}
-		$url_title = adjust_title($row['title'], $row['region']);//get title part of url, adjust for exceptions
+		$url_title = adjust_title($row['title'], $row['region'], $current_list);//get title part of url, adjust for exceptions
 		$appraisal_query = $url_platform . "/" . $url_title;//build full url
 
 		//build arrays from current selection to pass to bash for appraisals
@@ -296,15 +301,22 @@ $conn->close();
 
 //alters the title of each game that is to be passed to bash script for scraping pricecharting.com
 //some titles have special characters or slightly different title from what is in db
-function adjust_title($title, $region){
+function adjust_title($title, $region, $platform){
 	//add specific title exceptions here
 	$title = str_replace('\'98', '98', $title);
 	$title = str_replace('\'s Pro Skater', '', $title);
 	$title = str_replace(' (2002)', '', $title);
 	$title = str_replace(' - The Movie', '', $title);
+	$title = str_replace(' - Rehydrated', ' Rehydrated', $title);
+	$title = str_replace(' 1+2', ' 1 And 2', $title);
+	$title = str_replace(' ATF', '', $title);
+	$title = str_replace(' Extreme Snowboarding', '', $title);
+	$title = str_replace(' for Wii U', '', $title);
 	$title = str_replace(' The Sport!', '', $title);
 	$title = str_replace(' Version: Special Pikachu Edition', '', $title);
 	$title = str_replace(': 6 Golden Coins', '', $title);
+	$title = str_replace(': And thus into Legend...', '', $title);
+	$title = str_replace(': Capsule Senki', '', $title);
 	$title = str_replace(': Clubhouse Fun', '', $title);
 	$title = str_replace(': Diddy\'s Kong Quest', '', $title);
 	$title = str_replace(': Dixie & Diddy', '', $title);
@@ -314,6 +326,8 @@ function adjust_title($title, $region){
 	$title = str_replace(': Hunt for the Golden Warpship', '', $title);
 	$title = str_replace(': Nazo no Krems Shima', '', $title);
 	$title = str_replace(': Playground of Destruction', '', $title);
+	$title = str_replace(': Rekka no Gotoku Tenka o Nusure!', '', $title);
+	$title = str_replace(': Senbatsu Pro Yakyuu', '', $title);
 	$title = str_replace(': Silent Assassin', '', $title);
 	$title = str_replace(': The Arcade Game', '', $title);
 	$title = str_replace(': The Complete Collection', '', $title);
@@ -321,17 +335,17 @@ function adjust_title($title, $region){
 	$title = str_replace(': The Invasion of Normandy', '', $title);
 	$title = str_replace('358/2', '3582', $title);
 	$title = str_replace('and the Chamber of Secrets', 'Chamber of Secrets', $title);
-	$title = str_replace('and the Philosopher\'s Stone', 'Sorcerer\'s Stone', $title);
+	$title = str_replace('and the Philosopher\'s Stone', 'Sorcerers Stone', $title);
 	$title = str_replace('A Link to the Past', 'Link to the Past', $title);
 	$title = str_replace('Artillery Duel/Chuck Norris Superkicks', 'Artillery Duel & Chuck Norris Superkicks', $title);
-	$title = str_replace('ATF', '', $title);
-	$title = str_replace('Brain Age 2: More Training in Minutes a Day!', 'Brain Age 2', $title);
 	$title = str_replace('Bio F.R.E.A.K.S.', 'Biofreaks', $title);
-	$title = str_replace('Classic NES Series: Super Mario Bros.', 'Super Mario Bros. Classic NES Series', $title);
+	$title = str_replace('Blue Version', 'Blue', $title);
+	$title = str_replace('Brain Age 2: More Training in Minutes a Day!', 'Brain Age 2', $title);
+	$title = str_replace('Carbon - Own', 'Carbon Own', $title);
+	$title = str_replace('Classic NES Series: Super Mario Bros.', 'Super Mario [Classic NES Series]', $title);
 	$title = str_replace('Disney\'s Tarzan', 'Tarzan', $title);
 	$title = str_replace('DuckTales', 'Duck Tales', $title);
 	$title = str_replace('Eternal Darkness: Sanity\'s Requiem', 'Eternal Darkness', $title);
-	$title = str_replace('Extreme Snowboarding', '', $title);
 	$title = str_replace('F-1 Race', 'F1 Race', $title);
 	$title = str_replace('Featuring Kobe Bryant', '', $title);
 	$title = str_replace('GameBoy Player', 'GameBoy Player Start Up Disc', $title);
@@ -341,24 +355,31 @@ function adjust_title($title, $region){
 	$title = str_replace('Garry Kitchen\'s ', '', $title);
 	$title = str_replace('Gold Version', 'Gold', $title);
 	$title = str_replace('GoldenEye 007', '007 GoldenEye', $title);
+	$title = str_replace('Greatest 18 Holes of Major Championship ', '', $title);
 	$title = str_replace('Hangtime', 'Hang Time', $title);
 	$title = str_replace('HeartGold', 'HeartGold Version', $title);
-	$title = str_replace('Ico Shadow of the Colossus HD', 'Ico & Shadow of the Colossus Collection', $title);
+	$title = str_replace('Ico/Shadow of the Colossus HD', 'Ico & Shadow of the Colossus Collection', $title);
 	$title = str_replace('Irodzuki Tincle no Koi no Balloon Trip', 'Tingle\'s Balloon Trip Of Love', $title);
 	$title = str_replace('Ironsword', 'Iron Sword', $title);
 	$title = str_replace('Jak and Daxter HD Collection', 'Jak & Daxter Collection', $title);
+	$title = str_replace('J.League', 'J League', $title);
 	$title = str_replace('James Bond 007: NightFire', '007 NightFire', $title);
 	$title = str_replace('John Romero\'s ', '', $title);
 	$title = str_replace('LeafGreen', 'Leaf Green', $title);
 	$title = str_replace('Madden NFL 2001', 'Madden 2001', $title);
 	$title = str_replace('Mario & Luigi: Dream Team', 'Mario And Luigi: Dream Team', $title);
+	$title = str_replace('Marvel\'s Spider-Man', 'Marvel Spiderman', $title);
 	$title = str_replace('Monster Truck Madness 64', 'Monster Truck Madness', $title);
 	$title = str_replace('Nicklaus\'', 'Nicklaus', $title);
 	$title = str_replace('Nine Hours, Nine Persons, Nine Doors', '999 9 Hours 9 Persons 9 Doors', $title);
 	$title = str_replace('Paper Mario: The Thousand-Year Door', 'Paper Mario Thousand Year Door', $title);
 	$title = str_replace('Pocket Monsters', 'Pokemon', $title);
+	$title = str_replace('Pokémon White 2', 'Pokemon White Version 2', $title);
+	$title = str_replace('Puzzles & Dragons:', 'Puzzles & Dragons Z + Puzzles & Dragons:', $title);
 	$title = str_replace('Ratchet & Clank HD Collection', 'Ratchet & Clank Collection', $title);
-	$title = str_replace('RE:Chain', 'RE: Chain', $title);
+	$title = str_replace('Ratchet & Clank: Rift Apart', 'Ratchet and Clank: Rift Apart', $title);
+	$title = str_replace('Re:Chain', 'RE Chain', $title);
+	$title = str_replace('Red Version', 'Red', $title);
 	$title = str_replace('Road Rash 64', 'Road Rash', $title);
 	$title = str_replace('Silkworm', 'Silk Worm', $title);
 	$title = str_replace('Silly Sports Spectacular', 'Silly Sports', $title);
@@ -367,7 +388,10 @@ function adjust_title($title, $region){
 	$title = str_replace('Snake Rattle \'n\' Roll', 'Snake Rattle N Roll', $title);
 	$title = str_replace('SoulSilver', 'SoulSilver Version', $title);
 	$title = str_replace('Spider Man', 'Spiderman', $title);
+	$title = str_replace('Spider-Man', 'Spiderman', $title);
 	$title = str_replace('Star Wars Episode I: Battle for Naboo', 'Star Wars Battle For Naboo', $title);
+	$title = str_replace('Super Mario: Yossy Island', 'Super Mario World 2: Yoshi\'s Island', $title);
+	$title = str_replace('Super Mario Bros./Duck Hunt', 'Super Mario Bros And Duck Hunt', $title);
 	$title = str_replace('The Ancient Ship', 'Ancient Ship', $title);
 	$title = str_replace('The Elder Scrolls', 'Elder Scrolls', $title);
 	$title = str_replace('The Great Escape', 'Great Escape', $title);
@@ -375,8 +399,9 @@ function adjust_title($title, $region){
 	$title = str_replace('The Legend of the Mystical Ninja', 'Legend Of The Mystical Ninja', $title);	
 	$title = str_replace('The Lord of the Rings: The Return of the King', 'Lord of the Rings: Return of the King', $title);
 	$title = str_replace('The Orange Box', 'Orange Box', $title);	
+	$title = str_replace('The Tower of Druaga', 'Tower of Druaga', $title);	
 	$title = str_replace('The Wind Waker', 'Wind Waker', $title);
-	$title = str_replace('The World Ends', 'World Ends', $title);
+	$title = str_replace('The World Ends With You', 'World Ends With You', $title);
 	$title = str_replace('The World Is Not Enough', '007 World Is Not Enough', $title);
 	$title = str_replace('TimeSplitters', 'Time-Splitters', $title);
 	$title = str_replace('Tom Clancy\'s Rainbow Six', 'Rainbow Six', $title);
@@ -386,22 +411,32 @@ function adjust_title($title, $region){
 	$title = str_replace('WarioWare, Inc.: Mega Party Game$', 'Wario Ware Mega Party Games', $title);
 	$title = str_replace('Wizards & Warriors', 'Wizards and Warriors', $title);
 	$title = str_replace('Yoshi Touch & Go', 'Yoshi Touch and Go', $title);
-	$title = str_replace('WCW nWo', 'WCW Vs NWO', $title);
+	$title = str_replace('WCW/nWo', 'WCW Vs NWO', $title);
 	$title = str_replace('Wheel of Fortune Deluxe!', 'Wheel of Fortune Deluxe Edition', $title);
 	$title = str_replace('WWF War Zone', 'WWF Warzone', $title);
 //	$title = str_replace('', '', $title);
 	
+	//revert a couple of changes	
+	$title = str_replace(': World Ends with You', ': The World Ends With You', $title);
+	$title = str_replace(': Great Escape', ': The Great Escape',$title);
+	
+	//more specific exception	
 	if($title == 'Kingdom Hearts II')
 		$title = str_replace('Kingdom Hearts II', 'Kingdom Hearts 2', $title);
-
-	if($title != 'The Legend of Zelda')
-		$title = str_replace('The Legend of Zelda', 'Zelda', $title);	
+	
+	$title = str_replace('The Legend of Zelda', 'Legend of Zelda',$title);
+	if($title != 'Legend of Zelda')
+		$title = str_replace('Legend of Zelda', 'Zelda', $title);	
 
 	if ($region == "NTSC" && $title != "Donkey Konga 2") 
 		$title = str_replace('Donkey Konga', 'Donkey Konga Game Only', $title);
+	
+	//platform specific exceptions
+	if($platform == 'ps5' && $title == 'Resident Evil 4')
+		$title = 'Resident Evil 4 Remake';
 
 	//replace special chars
-	$title = str_replace(array('°', '.', ',', '!', '#'), '', $title);
+	$title = str_replace(array('°', '.', ',', '!', '#', '♯'), '', $title);
 	$title = str_replace('é', 'e', $title);
 	$title = str_replace('ü', 'u', $title);
 	$title = str_replace('ö', 'o', $title);
