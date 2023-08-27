@@ -307,8 +307,6 @@ function adjust_title($title, $region, $platform){
 	$title = str_replace('\'s Pro Skater', '', $title);
 	$title = str_replace(' (2002)', '', $title);
 	$title = str_replace(' - The Movie', '', $title);
-	$title = str_replace(' - Rehydrated', ' Rehydrated', $title);
-	$title = str_replace(' 1+2', ' 1 And 2', $title);
 	$title = str_replace(' ATF', '', $title);
 	$title = str_replace(' Extreme Snowboarding', '', $title);
 	$title = str_replace(' for Wii U', '', $title);
@@ -316,6 +314,7 @@ function adjust_title($title, $region, $platform){
 	$title = str_replace(' Version: Special Pikachu Edition', '', $title);
 	$title = str_replace(': 6 Golden Coins', '', $title);
 	$title = str_replace(': And thus into Legend...', '', $title);
+	$title = str_replace(': Battle for Bikini Bottom - Rehydrated', ' Battle for Bikini Bottom Rehydrated', $title);
 	$title = str_replace(': Capsule Senki', '', $title);
 	$title = str_replace(': Clubhouse Fun', '', $title);
 	$title = str_replace(': Diddy\'s Kong Quest', '', $title);
@@ -375,7 +374,7 @@ function adjust_title($title, $region, $platform){
 	$title = str_replace('Paper Mario: The Thousand-Year Door', 'Paper Mario Thousand Year Door', $title);
 	$title = str_replace('Pocket Monsters', 'Pokemon', $title);
 	$title = str_replace('Pokémon White 2', 'Pokemon White Version 2', $title);
-	$title = str_replace('Puzzles & Dragons:', 'Puzzles & Dragons Z + Puzzles & Dragons:', $title);
+	$title = str_replace('Puzzle & Dragons:', 'Puzzle & Dragons Z + Puzzle & Dragons:', $title);
 	$title = str_replace('Ratchet & Clank HD Collection', 'Ratchet & Clank Collection', $title);
 	$title = str_replace('Ratchet & Clank: Rift Apart', 'Ratchet and Clank: Rift Apart', $title);
 	$title = str_replace('Re:Chain', 'RE Chain', $title);
@@ -419,7 +418,8 @@ function adjust_title($title, $region, $platform){
 	//revert a couple of changes	
 	$title = str_replace(': World Ends with You', ': The World Ends With You', $title);
 	$title = str_replace(': Great Escape', ': The Great Escape',$title);
-	
+	$title = str_replace('Tony Hawk 1+2', 'Tony Hawk\'s Pro Skater 1 And 2', $title);
+
 	//more specific exception	
 	if($title == 'Kingdom Hearts II')
 		$title = str_replace('Kingdom Hearts II', 'Kingdom Hearts 2', $title);
@@ -436,7 +436,7 @@ function adjust_title($title, $region, $platform){
 		$title = 'Resident Evil 4 Remake';
 
 	//replace special chars
-	$title = str_replace(array('°', '.', ',', '!', '#', '♯'), '', $title);
+	$title = str_replace(array('°', '.', ',', '!', '#', '♯', '–'), '', $title);
 	$title = str_replace('é', 'e', $title);
 	$title = str_replace('ü', 'u', $title);
 	$title = str_replace('ö', 'o', $title);
