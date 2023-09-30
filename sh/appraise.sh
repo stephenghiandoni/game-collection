@@ -32,7 +32,7 @@ printf "Process $$ is running." > "$LOCK_FILE"
 printf "" > $LOG_FILE #wipe logs
 printf "" > $ERR_LOG_FILE
 
-#num_games=2  #limit/alter range of i for testing
+#num_games=75  #limit/alter range of i for testing
 #download, scrape and insert into db data for each game
 for (( i=0; i<$num_games; i++ ))
 do
@@ -47,7 +47,6 @@ do
 	box_owned=${box_list[$i]}
 	manual_owned=${manual_list[$i]}
 	sealed=${sealed_list[$i]}
-	match_str="Loose Price Complete Price New Price Graded Price"
 	result="" #price to insert
 	current_date=$(date +"%Y-%m-%d %H:%M:%S")
 	
@@ -68,9 +67,7 @@ do
 	lynx -dump "$full_url" > $TMP_DIR/$filename
 
 	#parse data to extract price info
-	price_str=$(cat $TMP_DIR/$filename | grep -A 5 "$match_str" | tail -n 2 | tr -d '$')
-
-	printf "$price_str" >> $LOG_FILE
+	price_str=$(cat $TMP_DIR/$filename | grep -Eo '\$[0-9]*.?[0-9]{2}' | tr -d '$')	
 	if [ "$price_str" = "" ]; then
 		printf	"$url not found...\n\n"	>> $ERR_LOG_FILE
 		rm -f "$TMP_DIR/$filename"
