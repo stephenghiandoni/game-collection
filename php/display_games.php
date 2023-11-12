@@ -365,6 +365,8 @@ function adjust_title($title, $region, $platform){
 	$title = str_replace('James Bond 007: NightFire', '007 NightFire', $title);
 	$title = str_replace('John Romero\'s ', '', $title);
 	$title = str_replace('LeafGreen', 'Leaf Green', $title);
+	$title = str_replace('Madden NFL 99', 'Madden 99', $title);
+	$title = str_replace('Madden NFL 2000', 'Madden 2000', $title);
 	$title = str_replace('Madden NFL 2001', 'Madden 2001', $title);
 	$title = str_replace('Mario & Luigi: Dream Team', 'Mario And Luigi: Dream Team', $title);
 	$title = str_replace('Marvel\'s Spider-Man', 'Marvel Spiderman', $title);
