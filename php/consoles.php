@@ -63,9 +63,14 @@ FORM FOR CONSOLE ENTRY
 <?php
 for($i = 0; $i < count($platform_list); $i++){
 	$p = "$platform_list[$i]";
+	$platform_clean = "$p";//cleaner version of platform name 
+	$delimiter_pos = strpos($platform_clean, '/');
+	if($delimiter_pos) $platform_clean = substr($platform_clean, $delimiter_pos + 1);
+	$platform_clean = str_replace(array('Console', 'System'), '', $platform_clean);
+	$platform_clean = str_replace('-', ' ', $platform_clean);
 	echo "<option value=$p ";
-	echo (isset($_POST['pname_drop']) && $_POST['pname_drop'] == "$p") ? 'selected' : '';//gross...
-	echo ">$p</option>";
+	echo (isset($_POST['pname_drop']) && $_POST['pname_drop'] == "$p") ? 'selected' : '';
+	echo ">" . (($i == 0) ? "Select a Platform" : $platform_clean) . "</option>";
 }
 ?>
 </select>
@@ -167,18 +172,19 @@ if($result->num_rows > 0){
 	?>
 		<table>
 		<tr>
-		<th>Platform ID</th>
-		<th>Owner ID</th>
 		<th>Platform</th>
+		<th>Owner ID</th>
 		<th>Complete in Box</th>
 		<th>Region</th>
 		<th>Number Owned</th>
+		<th>Value(USD)</th>
+		<th>Value Date</th>
 		</tr>
 		<?php
 		$i = 0;
 	while($row = $result->fetch_assoc()){
 		echo "<tr>";
-		echo "<td>". $row["platform_id"] . "</td>";
+		echo "<td>". $row['name'] . "</td>";
 		//This will break if more owners are added**********************
 		if($row['owner_id'] == 1)
 			echo "<td>Stephen</td>";
@@ -186,13 +192,14 @@ if($result->num_rows > 0){
 			echo "<td>Jordan</td>";
 		else if($row['owner_id'] == 3)
 			echo "<td>Shared</td>";
-		echo "<td>". $row['name'] . "</td>";
 		if($row['cib'] == 1)
 			echo "<td>Yes</td>";
 		else
 			echo "<td>No</td>";
 		echo "<td>". $row["region"] . "</td>";
 		echo "<td>". $row["num_owned"] .  "</td>";
+		echo "<td>". "N/A" .  "</td>";
+		echo "<td>". "N/A" .  "</td>";
 		echo "</tr>";
 	}
 	?>
@@ -203,6 +210,7 @@ if($result->num_rows > 0){
 }
 
 $conn->close();
+
 ?>
 </body>
 </html>

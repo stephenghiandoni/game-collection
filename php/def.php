@@ -5,7 +5,7 @@ $db_options = "db_options.php";
 $games = "games.php";
 $display_games = "display_games.php";
 $consoles = "consoles.php";
-$value_pg = "value.php";
+$peripherals = "peripherals.php";
 $gid_famicom = "famicom";
 $gid_sfamicom = "super_famicom";
 $gid_3ds = "3ds";
@@ -92,40 +92,60 @@ $region_list = array(
 		"PAL"
 		);
 
+//Each console should match what is given in the pricecharting.com url
 $platform_list = array(
 		//NINTENDO
-		"NES",
-		"Famicom",
-		"SNES",
-		"SNES&nbspModel&nbsp2",
-		"Super&nbspFamicom",
-		"Virtual&nbspBoy",
-		"N64",
-		"N64&nbspJungle&nbspGreen",
-		"N64&nbspIce&nbspBlue",
+		"NES/Nintendo-NES-Console",
+		"Famicom/Famicom-Console",
+		"Super-Nintendo/Super-Nintendo-System",
+		"Super-Nintendo/Super-Nintendo-System-Jr",
+		"Super-Famicom/Super-Famicom-Console",
+		"Virtual-Boy/Virtual-Boy-System",
+		"Nintendo-64/Nintendo-64-System",
+		"Nintendo-64/Funtastic-Jungle-Green-Nintendo-64-System",
+		"Nintendo-64/Funtastic-Ice-Blue-Nintendo-64-System",
 		"N64&nbspClear&nbspRed",
 		"N64&nbspClear&nbspBlue",
-		"N64&nbspFuntastic&nbspJungle&nbspGreen",
 		"N64&nbspGold",
 		"N64&nbspPikachu&nbspBlue",
-		"Gamecube",
-		"Wii",
+		"Gamecube/Platinum-Gamecube-System",
+		"Gamecube/Black-Gamecube-System",
+		"Wii/White-Nintendo-Wii-System",
 		"Wii&nbspU",
-		"Switch",
+		"Nintendo-Switch/Nintendo-Switch-With-Blue-and-Red-Joy-Con",
+		"Nintendo-Switch/Nintendo-Switch-With-Gray-Joy-Con",
 		//SONY
-		"PS1",
-		"PS2&nbspFat",
-		"PS2&nbspSlim",
-		"PS3&nbspFat",
-		"PS3&nbspSlim",
+		"Playstation/Playstation-System",
+		"Playstation-2/Playstation-2-System",
+		"Playstation-2/Slim-Playstation-2-System",
+		"Playstation-2/Silver-Slim-Playstation-2-System",
+		"Playstation-2/White-Slim-Playstation-2-System",
+		"Playstation-3/Playstation-3-System-20GB",
+		"Playstation-3/Playstation-3-System-40GB",
+		"Playstation-3/Playstation-3-System-40GB-Spiderman-Movie-Pack",
+		"Playstation-3/Playstation-3-System-60GB",
+		"Playstation-3/Playstation-3-System-80GB",
+		"Playstation-3/Playstation-3-System-80GB-Backward-Compatible",
+		"Playstation-3/Playstation-3-System-80GB-Metal-Gear-Solid-4-Pack",
+		"Playstation-3/Playstation-3-System-80GB-MotorStorm-Bundle",
+		"Playstation-3/Playstation-3-System-160GB",
+		"Playstation-3/Playstation-3-System-320GB",
+		"Playstation-3/Playstation-3-Slim-System-120GB",
+		"Playstation-3/Playstation-3-Slim-System-160GB",
+		"Playstation-3/Playstation-3-Slim-System-250GB",
+		"Playstation-3/Playstation-3-Super-Slim-System-12GB",
+		"Playstation-3/Playstation-3-Super-Slim-250GB-System",
+		"Playstation-3/Playstation-3-500GB-Super-Slim-System",
 		"PS4",
 		"PS5",
 		//SEGA
-		"Master&nbspSystem",
-		"Genesis&nbsp&nbsp2",
-		"Saturn",
+		"Sega-Master-System/Sega-Master-System-Console",
+		"Sega-Genesis/Sega-Genesis-Model-1-Console",
+		"Sega-Genesis/Sega-Genesis-Model-2-Console",
+		"Sega-Genesis/Sega-Genesis-3-Console",
+		"Sega-Saturn/Sega-Saturn-Console",
 		//ATARI
-		"Atari&nbsp2600",
+		"Atari-2600/Atari-2600-System",
 		//HANDHELDS
 		"GameBoy&nbspOriginal",
 		"GameBoy&nbspColor",
