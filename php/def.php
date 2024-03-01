@@ -6,6 +6,7 @@ $games = "games.php";
 $display_games = "display_games.php";
 $consoles = "consoles.php";
 $peripherals = "peripherals.php";
+$login = "login_page.php";
 $gid_famicom = "famicom";
 $gid_sfamicom = "super_famicom";
 $gid_3ds = "3ds";

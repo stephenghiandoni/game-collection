@@ -6,12 +6,6 @@ body{
 	background-color: orange;
 }
 
-#title_header{
-	color: green;
-	text-align: center;
-	border: 2px groove black;
-}
-
 #form_container	{
 	text-align: center;	
 }
