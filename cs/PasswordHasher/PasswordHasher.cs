@@ -27,7 +27,7 @@ class PasswordHasher{
 			this.password = password;
 			userExists = true;
 			passwordHashStored = "";
-			passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+			passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
 
 			string query = $"SELECT Username, Hash FROM Login WHERE Username=\'{username}\'";
 			using(var connection = new MySqlConnection(connStr)){
@@ -50,7 +50,7 @@ class PasswordHasher{
 
 		public int Login(){
 			if(!userExists) return -1;
-			bool match = BCrypt.Net.BCrypt.Verify(password, passwordHashStored);
+			bool match = BCrypt.Net.BCrypt.EnhancedVerify(password, passwordHashStored);
 			if(!match) return -2;
 			Console.WriteLine($"User exists: {userExists} Username: {username} Hash: {passwordHashStored}");	
 			return 0;
