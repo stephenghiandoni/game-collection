@@ -7,12 +7,15 @@
 <?php
 
 if(isset($_POST['login_btn'])){
-	login("n");
+	$success = login("n");
+	if($success === "0") header("Location:../index.php");
+	else echo $success;
 	exit;
 }
 
-if(isset($_POST['signup_btn'])){
-	login("y");
+if(isset($_POST['register_btn'])){
+	$success = login("y");
+	echo $success;
 	exit;
 }
 
@@ -24,29 +27,28 @@ include('../header_bar.php');
 ?>
 <form method="post" id="login_form">
 <h1>Login</h1>
-<label>Username: </label><input type="text" id="uname" name="uname"><br>
-<label>Password: </label><input type="text" id="pword" name="pword"><br><br>
+<label>Username: <input type="text" id="uname" name="uname"></label><br>
+<label>Password: <input type="text" id="pword" name="pword"></label><br><br>
 <input type="submit" name="login_btn" class="button" value="Login">
 <input type="submit" name="signup_btn" class="button" onclick="toggle_signup_form()" value="Sign Up">
 </form>
 <form method="post" id="signup_form">
 <h1>Register New Account</h1>
-<label>Username: </label><input type="text" id="new_uname" name="new_uname"><br>
-<label>Password: </label><input type="text" id="new_pword" name="new_pword"><br>
-<label>Confirm Password: </label><input type="text" id="confirm_new_pword" name="confirm_new_pword"><br><br>
-<input type="submit" name="register_btn" class="button" value="Register">
+<p>Password must be at least 6 characters long</p>
+<label>Username: <input type="text" id="new_uname" class="new_account" name="new_uname"></label><br>
+<label>Password: <input type="text" id="new_pword" class="new_account" name="new_pword"></label><br>
+<label>Confirm Password: <input type="text" id="confirm_new_pword" class="new_account" name="confirm_new_pword"></label><br><br>
+<input type="submit" name="register_btn" id="submit_new_account" class="button" value="Register" disabled>
 </form>
-
 
 <?php
 function login($new_user){
-	$username = escapeshellarg($_POST['uname']);
-	$password = escapeshellarg($_POST['pword']);
-	$login_dir = "/var/www/html/cs/PasswordHasher";
+	$username = ($new_user === "y") ? escapeshellarg($_POST['new_uname']) : escapeshellarg($_POST['uname']);
+	$password = ($new_user === "y") ? escapeshellarg($_POST['new_pword']) : escapeshellarg($_POST['pword']);
 	$command = "./../cs/PasswordHasher/bin/release/net8.0/linux-arm64/PasswordHasher $username $password $new_user";
 	//$output = shell_exec("$command 2>&1 ");
 	$output = exec("$command 2>&1 ");
-	echo $output;
+	return $output;
 }
 ?>
 <script src="../javascript/login_page.js"></script>

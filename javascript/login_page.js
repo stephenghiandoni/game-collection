@@ -3,7 +3,8 @@ const username = document.getElementById('new_uname');
 const password = document.getElementById('new_pword');
 const confirm_password = document.getElementById('confirm_new_pword');
 const submit_button = document.getElementById('submit_new_account');
-
+const login = document.getElementById("login_form");	
+const signup = document.getElementById("signup_form");	
 let valid_uname = false;
 let valid_pword = false;
 
@@ -38,17 +39,14 @@ function check_validity(){
 
 function toggle_signup_form(){
 	event.preventDefault();
-	console.log("function called");
-	var login = document.getElementById("login_form");	
-	var signup = document.getElementById("signup_form");	
-	console.log("vars set");
+	username.value = '';
+	password.value = '';
+	confirm_password.value = '';
 
 	if (signup.style.display === "block") {
-		console.log("none");
 		signup.style.display = "none";
 		login.style.display = "block";
 	}else{
-		console.log("block");
 		signup.style.display = "block";
 		login.style.display = "none";
 	}
