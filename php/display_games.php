@@ -9,10 +9,13 @@ Can also run appraisals for each game
 <title>Browse Game Collection</title>
 <!--script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script-->
 <script src="../javascript/display_games.js"></script>
-<link rel="stylesheet" href="css/display_games.css?version=1" type="text/css">
+<link rel="stylesheet" href="../css/header_bar.css?version=1" type="text/css">
+<link rel="stylesheet" href="../css/index.css?version=1" type="text/css">
+<link rel="stylesheet" href="../css/display_games.css?version=1" type="text/css">
 <?php
 include('def.php');
 include('/var/www/sensitive.php');
+
 $tmp_path = '/var/www/html/sh/tmp';
 $lock_file = '/var/www/html/sh/tmp/appraise.lock';
 $current_list = "";
@@ -47,6 +50,7 @@ if(isset($_POST['platform_filter'])){
 
 </head>
 <body>
+<?php //include('header_bar.php'); ?>
 <header><h1>Browse Game Collection</h1></header>
 <form method="post">
 <label for="pname_lbl">Platform: </label>

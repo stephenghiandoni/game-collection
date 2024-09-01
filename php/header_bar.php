@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/header_bar.css?version=1" type="text/css">
+</head>
+<body>
 <?php
 include('def.php');
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -14,3 +21,5 @@ if(isset($_POST['login'])){
 </form>
 </div>
 <script src="<?php ($current_page == 'index.php') ? "javascript/header_bar.js" : "../javascript/header_bar.js"; ?>"></script>
+</body>
+</html>

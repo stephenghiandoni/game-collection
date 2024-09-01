@@ -1,5 +1,6 @@
 *{
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Noto Sans';
+/*	font-family: Arial, Helvetica, sans-serif;*/
 }
 
 body{
@@ -9,9 +10,14 @@ body{
 	height: 100vh;
 	margin: 0;
 	/*background-image: url('../images/spookyvision.webp');*/
-	background-image: url('../images/nasubi.png');
+	/*background-image: url('../images/nasubi.png');*/
+	background-image: url('../images/stars.webp');
 	/*background-size: cover;*/
 	background-repeat: repeat; 
+}
+
+#vid_select_form{
+	text-align: center;
 }
 
 #title_div{
@@ -23,6 +29,7 @@ body{
 }
 
 .vjs-playlist{
+	border: 2px solid black;
 	width:auto;
 	height: 250px;
 }
@@ -30,7 +37,7 @@ body{
 .vjs-playlist-item{
 	border: 1px solid #777;	
 	height: 80px;
-	color: orange;
+	color: white;
 	align-items: center;
 }
 
@@ -52,8 +59,8 @@ body{
 }
 
 #player-container{
-	background: orange;
-	border: thin solid #333;
+	background: grey;
+	border: 2px solid #444;
 	display:inline-block;
 }
 

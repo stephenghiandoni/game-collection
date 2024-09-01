@@ -1,8 +1,12 @@
 #header_container{
-	border: 2px groove black;
+	/*border: 2px groove black;*/
 }
 
 #title_header{
-	color: green;
+	color: white;
 	text-align: center;
+}
+
+#login_btn{
+	size: 100px;
 }

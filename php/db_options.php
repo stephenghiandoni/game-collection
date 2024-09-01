@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Database Manager</title>
+<link rel="stylesheet" href="../css/header_bar.css?version=1" type="text/css">
 <link rel="stylesheet" href="../css/index.css?version=1" type="text/css">
 </head>
 <body>
-<h1>Make a Selection...</h1>
 <?php
 include('def.php');
+//include('header_bar.php');
 
 if(isset($_POST['home'])){
 	header("Location:$index");

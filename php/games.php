@@ -6,13 +6,11 @@ User selects which games to add to Collection DB
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="css/games.css?version=1" type="text/css">
+<link rel="stylesheet" href="../css/header_bar.css?version=1" type="text/css">
+<link rel="stylesheet" href="../css/index.css?version=1" type="text/css">
+<link rel="stylesheet" href="../css/games.css?version=1" type="text/css">
 <title>Game Entry</title>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-Convert <a href="https://en.wikipedia.org/wiki/Lists_of_video_games">tables from wikipedia</a> to CSV.
-<br/>
-<a href="https://wikitable2csv.ggor.de/">Table to CSV converter</a>
-<br/>
 <?php
 include('def.php');
 include('/var/www/sensitive.php');
@@ -46,7 +44,12 @@ if(isset($_POST['platform_filter'])){
 
 </head>
 <body>
+<?php //include('header_bar.php'); ?>
 <header><h1>Game Entry Field</h1></header>
+Convert <a href="https://en.wikipedia.org/wiki/Lists_of_video_games">tables from wikipedia</a> to CSV.
+<br/>
+<a href="https://wikitable2csv.ggor.de/">Table to CSV converter</a>
+<br/>
 <form method="post">
 <label for="pname_lbl">Platform: </label>
 <select name="pname_drop" id="pname">
@@ -79,10 +82,10 @@ if(isset($_POST['platform_filter'])){
 <option value=<?php echo $gid_x360; ?> >Xbox 360</option>
 <option value=<?php echo $gid_xbone; ?> >Xbox One</option>
 </select>
-<input type="submit" name="platform_filter" class="button" value="Filter"/>
+<input type="submit" name="platform_filter" id="filter_btn" class="button" value="Filter"/>
 </form>
 
-<form method="post">
+<form method="post" id="games_options_form">
 <input type="submit" name="browse" class="button" value="Browse"/>
 <input type="submit" name="home" class="button" value="Home"/>
 <input type="submit" name="back" class="button" value="Back"/>
@@ -286,7 +289,7 @@ if(isset($_POST['populate'])){
 //	pop_from_csv($conn, $csv_path_ps3_4, $gid_ps3);
 //	pop_from_csv($conn, $csv_path_ps4_1, $gid_ps4);
 //	pop_from_csv($conn, $csv_path_ps4_2, $gid_ps4);
-	pop_from_csv($conn, $csv_path_ps5_1, $gid_ps5);
+//	pop_from_csv($conn, $csv_path_ps5_1, $gid_ps5);
 //	pop_from_csv($conn, $csv_path_psp, $gid_psp);
 //	pop_from_csv($conn, $csv_path_ps_vita_1, $gid_ps_vita);
 //	pop_from_csv($conn, $csv_path_ps_vita_2, $gid_ps_vita);

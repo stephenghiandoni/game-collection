@@ -110,7 +110,7 @@ do
 		echo "You have $url complete!" >> $LOG_FILE
 		result=$complete_price
 	else
-		echo "Error: Neither game, box nor manual found in db for $url..." >> $LOG_FILE
+		echo "Error: Neither game, box nor manual found in db for $url..." >> $ERR_LOG_FILE
 	fi
 
 	rm -f "$TMP_DIR/$filename"

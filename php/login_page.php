@@ -2,34 +2,47 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="../css/index.css?version=1" type="text/css">
 <link rel="stylesheet" href="../css/login_page.css?version=1" type="text/css">
 <title>Login</title>
 <?php
+//include('header_bar.php');
+session_start();
+
+if(isset($_SESSION['err'])) $err = $_SESSION['err'];
 
 if(isset($_POST['login_btn'])){
 	$success = login("n");
-	if($success === "0") header("Location:../index.php");
-	else echo $success;
-	exit;
+	if($success === "0"){
+		if(isset($_SESSION['err'])) unset($_SESSION['err']);
+		setcookie("logged_user", $_POST['uname'], time() + (120), "/"); 
+		header("Location:../index.php");
+	}else{
+		$_SESSION['err'] = $success;
+		header("Location:login_page.php");
+	}	
+	exit();
 }
 
 if(isset($_POST['register_btn'])){
 	$success = login("y");
-	echo $success;
-	exit;
+	$_SESSION['err'] = ($success === "0") ? "User created successfully!" : $success;
+	header("Location:login_page.php");
+	exit();
 }
 
 ?>
 </head>
 <body>
 <?php
-include('../header_bar.php');
+include('header_bar.php');
 ?>
 <form method="post" id="login_form">
+<p><?php echo $err; ?></p>
 <h1>Login</h1>
 <label>Username: <input type="text" id="uname" name="uname"></label><br>
 <label>Password: <input type="text" id="pword" name="pword"></label><br><br>
-<input type="submit" name="login_btn" class="button" value="Login">
+<input type="submit" name="login_btn" class="button" value="Login" >
 <input type="submit" name="signup_btn" class="button" onclick="toggle_signup_form()" value="Sign Up">
 </form>
 <form method="post" id="signup_form">

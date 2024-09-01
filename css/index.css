@@ -3,7 +3,8 @@
 }
 
 body{
-	background-color: orange;
+	background-image: url("../images/stars.webp");
+	color: white;
 }
 
 #form_container	{

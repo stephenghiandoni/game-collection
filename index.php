@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Steve's Domain</title>
-<link rel="stylesheet" href="../css/header_bar.css?version=1" type="text/css">
 <link rel="stylesheet" href="css/index.css?version=1" type="text/css">
 </head>
 <body>
 <?php
-include('header_bar.php');
+include('php/header_bar.php');
 
 if(isset($_POST['opendb'])){
 	header("Location:php/db_options.php");

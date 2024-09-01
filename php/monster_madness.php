@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="../node_modules/video.js/dist/video-js.min.css" type="text/css"></link>
 <link rel="stylesheet" href="../node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.css" type="text/css"></link>
 <?php
+include('def.php');
+
 $kvs_s1 = '../videos/KvS/S1/';
 $kvs_s2 = '../videos/KvS/S2/';
 $kvs_s3 = '../videos/KvS/S3/';
@@ -14,6 +16,10 @@ $kvs_s4 = '../videos/KvS/S4/';
 $kvs_s5 = '../videos/KvS/S5/';
 $kvs_s6 = '../videos/KvS/S6/';
 $kvs_extra = '../videos/KvS/KvS_Other/';
+$hey_arnold_s1 = '../videos/HeyArnold/S1/';
+$spongebob_s1 = '../videos/SpongeBob/S1/';
+$spongebob_s2 = '../videos/SpongeBob/S2/';
+$spongebob_s3 = '../videos/SpongeBob/S3/';
 $mm2007_dir = '../videos/MonsterMadnessArchive/2007 - History of Horror/';
 $mm2008_dir = '../videos/MonsterMadnessArchive/2008 - GodzillaThon/';
 $mm2009_dir = '../videos/MonsterMadnessArchive/2009 - Monster Madness 3/';
@@ -24,9 +30,13 @@ $mm2013_dir = '../videos/MonsterMadnessArchive/2013 - Sequel-A-Thon-2/';
 $mm2014_dir = '../videos/MonsterMadnessArchive/2014 - Monster Madness 8/';
 $mm2015_dir = '../videos/MonsterMadnessArchive/2015 - Monster Madness 9/';
 $mm_other_dir = '../videos/MonsterMadnessArchive/Other/';
+$avgn = '../videos/AVGN/';
 $treehouse_dir = '../videos/TreehouseOfHorror/';
-$treehouse_original_dir = '../videos/Treehouse of Horror Original Aspect Ratio/';
 $other_dir = '../videos/OtherHalloweenStuff/';
+$ntbts_dir = '../videos/NTBTS/';
+$test = '../videos/External/System Volume Information/Test/';
+$link_test = '../videos/Links/';
+
 $current_list = "";
 $video_links = array();
 
@@ -37,14 +47,23 @@ if(isset($_POST['video_filter'])){
 	$json_video_links = json_encode($video_links);
 	unset($_POST['video_filter']);
 }
+
+if(isset($_POST['home_btn'])){
+	header("Location:$index");
+	exit;
+}
+
 ?>
 </head>
 <body>
 
 <!-- Add a new button and a dir path above for each new folder of shows, videos will populate automatically from their corresponding directory in /var/www/html/videos -->
 <div id="player-container">
-<form method="post">
-<label for="vid_select_lbl">Videos: </label>
+
+<video id="video" class="video-js" controls preload="auto" width="640" height="360" data-setup='{}'></video>
+
+<form method="post" id="vid_select_form">
+<label for="vid_select_lbl"></label>
 <select name="vid_select_drop" id="vname">
 <option value='<?php echo $kvs_s1; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$kvs_s1") echo 'selected';?>>Kenny vs Spenny - Season 1</option>
 <option value='<?php echo $kvs_s2; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$kvs_s2") echo 'selected';?>>Kenny vs Spenny - Season 2</option>
@@ -53,6 +72,10 @@ if(isset($_POST['video_filter'])){
 <option value='<?php echo $kvs_s5; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$kvs_s5") echo 'selected';?>>Kenny vs Spenny - Season 5</option>
 <option value='<?php echo $kvs_s6; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$kvs_s6") echo 'selected';?>>Kenny vs Spenny - Season 6</option>
 <option value='<?php echo $kvs_extra; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$kvs_extra") echo 'selected';?>>Kenny vs Spenny - Extras</option>
+<option value='<?php echo $ntbts_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$ntbts_dir") echo 'selected';?>>Nirvanna the Band the Show</option>
+<option value='<?php echo $spongebob_s1; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$spongebob_s1") echo 'selected';?>>SpongeBob Season 1</option>
+<option value='<?php echo $spongebob_s2; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$spongebob_s2") echo 'selected';?>>SpongeBob Season 2</option>
+<option value='<?php echo $spongebob_s3; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$spongebob_s3") echo 'selected';?>>SpongeBob Season 3</option>
 <option value='<?php echo $mm2007_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2007_dir") echo 'selected';?>>2007 History of Horror</option>
 <option value='<?php echo $mm2008_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2008_dir") echo 'selected';?>>2008 GodzillaThon</option>
 <option value='<?php echo $mm2009_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2009_dir") echo 'selected';?>>2009 Monster Madness 3</option>
@@ -63,17 +86,21 @@ if(isset($_POST['video_filter'])){
 <option value='<?php echo $mm2014_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2014_dir") echo 'selected';?>>2014 Monster Madness 8</option>
 <option value='<?php echo $mm2015_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2015_dir") echo 'selected';?>>2015 Monster Madness 9</option>
 <option value='<?php echo $mm_other_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm_other_dir") echo 'selected';?>>Other Monster Madness</option>
+<option value='<?php echo $avgn; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$avgn") echo 'selected';?>>AVGN</option>
 <option value='<?php echo $treehouse_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$treehouse_dir") echo 'selected';?>>Treehouse of Horror</option>
-<option value='<?php echo $treehouse_original_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$treehouse_original_dir") echo 'selected';?>>Treehouse of Horror (4:3)</option>
 <option value='<?php echo $other_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$other_dir") echo 'selected';?>>Misc Shows</option>
+<option value='<?php echo $hey_arnold_s1; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$hey_arnold_s1") echo 'selected';?>>Hey Arnold S1</option>
+<option value='<?php echo $test; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$test") echo 'selected';?>>Test Dir</option>
+<option value='<?php echo $link_test; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$link_test") echo 'selected';?>>Sym Link Test Dir</option>
+
 </select>
 <input type="submit" name="video_filter" class="button" value="Display" />
+<input type="submit" name="home_btn" class="button" value="Home" />
 </form>
 <!--div id="title_div" class="vjs-playlist-now-playing"-->
-<div class="vjs-playlist-now-playing">
+<!--div class="vjs-playlist-now-playing"-->
 <!--h3 id="directory_title"></h3-->
-</div>
-<video id="video" class="video-js" controls preload="auto" width="640" height="360" data-setup='{}'></video>
+<!--/div-->
 <div class="vjs-playlist"></div>
 </div>
 
@@ -94,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	for(let i = 0; i < json_video_links.length; i++){
 		var temp = json_video_links[i];
 		const breakpoint = temp.lastIndexOf('/');
-		const clean_title = temp.substring(breakpoint+1).replace('.mp4', '');
+		const clean_title = temp.substring(breakpoint+1).replace(/\.(mp4|mkv)$/g, '');
 		titles[i] = clean_title;	
 	}
 
