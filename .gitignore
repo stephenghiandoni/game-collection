@@ -1,0 +1,11 @@
+/videos/
+/node_modules/
+/cs/PasswordHasher/PasswordHasher.csproj
+/cs/PasswordHasher/Sensitive.cs
+/cs/PasswordHasher/bin/
+/cs/PasswordHasher/obj/
+/cs/PasswordHasher/publish.sh
+package-lock.json
+package.json
+/sh/tmp/
+/php/monster_madness_dev.php
