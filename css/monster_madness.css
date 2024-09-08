@@ -20,6 +20,20 @@ body{
 	text-align: center;
 }
 
+#show_select_form{
+	text-align: center;
+}
+
+#show_select_drop{
+	width: 200px;
+	box-sizing: border-box;
+}
+
+#vid_select_drop{
+	width: 200px;
+	box-sizing: border-box;
+}
+
 #title_div{
 	width: 100%;
 	display: flex;
@@ -62,6 +76,12 @@ body{
 	background: grey;
 	border: 2px solid #444;
 	display:inline-block;
+}
+
+#form-container{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
 }
 
 .playlist{

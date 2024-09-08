@@ -1,4 +1,8 @@
-
+<?php
+/*
+ PAGE IS NO LONGER IN USE. KEEPING FOR NOW AS FALLBACK VERSION IN CASE OF ERROR. NEW PAGE IS STEVETUBE.PHP
+*/
+?>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -9,6 +13,7 @@
 <?php
 include('def.php');
 
+$avgn_s1 = '../videos/AVGN/Season1/';
 $kvs_s1 = '../videos/KvS/S1/';
 $kvs_s2 = '../videos/KvS/S2/';
 $kvs_s3 = '../videos/KvS/S3/';
@@ -53,7 +58,6 @@ $mm2013_dir = '../videos/MonsterMadnessArchive/2013 - Sequel-A-Thon-2/';
 $mm2014_dir = '../videos/MonsterMadnessArchive/2014 - Monster Madness 8/';
 $mm2015_dir = '../videos/MonsterMadnessArchive/2015 - Monster Madness 9/';
 $mm_other_dir = '../videos/MonsterMadnessArchive/Other/';
-$avgn = '../videos/AVGN/';
 $treehouse_dir = '../videos/TreehouseOfHorror/';
 $other_dir = '../videos/OtherHalloweenStuff/';
 $ntbts_dir = '../videos/NTBTS/';
@@ -136,7 +140,7 @@ if(isset($_POST['home_btn'])){
 <option value='<?php echo $mm2014_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2014_dir") echo 'selected';?>>2014 Monster Madness 8</option>
 <option value='<?php echo $mm2015_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm2015_dir") echo 'selected';?>>2015 Monster Madness 9</option>
 <option value='<?php echo $mm_other_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$mm_other_dir") echo 'selected';?>>Other Monster Madness</option>
-<option value='<?php echo $avgn; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$avgn") echo 'selected';?>>AVGN</option>
+<option value='<?php echo $avgn_s1; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$avgn_s1") echo 'selected';?>>AVGN</option>
 <option value='<?php echo $treehouse_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$treehouse_dir") echo 'selected';?>>Treehouse of Horror</option>
 <option value='<?php echo $other_dir; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$other_dir") echo 'selected';?>>Misc Shows</option>
 <option value='<?php echo $movies_comedy; ?>' <?php  if(isset($_POST['vid_select_drop']) && $_POST['vid_select_drop'] == "$movies_comedy") echo 'selected';?>>Comedy</option>
